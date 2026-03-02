@@ -112,7 +112,7 @@ export function ReifenrechnerClient() {
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-xs text-slate-400">Gemaess EU-Verordnung 2009/40/EG sind positive Tachoabweichungen bis ca. +4% toleriert. Negative Werte (Tacho zeigt zu wenig) sind sicherheitsrelevant.</p>
+            <p className="mt-2 text-xs text-slate-400">Rechtslage (Typgenehmigung): Ein Tacho darf niemals weniger als die reale Geschwindigkeit anzeigen. Er darf darüber liegen – je nach Geschwindigkeit bis maximal <strong>10% + 4 km/h</strong> (UN/ECE R39).</p>
           </div>
         </div>
       ) : (

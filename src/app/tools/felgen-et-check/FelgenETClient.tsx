@@ -1,235 +1,240 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-interface WheelSpec {
-  widthInch: string;
-  et: string;
-  tireWidth?: string;
-}
+// All code comments are in English as requested by the project convention.
 
-interface ETResult {
-  innerChangeA: number;
-  innerChangeB: number;
-  outerChangeA: number;
-  outerChangeB: number;
+type ETResult = {
+  // Positive => closer to suspension (less inner clearance)
+  innerEdgeChange: number;
+  // Positive => further out towards fender
+  outerEdgeChange: number;
+  // Positive => wheel/tire centerline moves outward (track increases)
+  centerShift: number;
+  // Positive => track width increases (both sides)
   trackChange: number;
-}
 
-function inchToMm(inch: number) {
-  return inch * 25.4;
-}
+  // Absolute reference distances (mm) from hub mounting face
+  oldInner: number;
+  oldOuter: number;
+  newInner: number;
+  newOuter: number;
 
-/**
- * Wheel geometry:
- *   rim_width_mm / 2 = half_rim
- *   inner_offset = ET (from hub face to inner rim lip)
- *   outer_offset = rim_width_mm - ET
- *
- * Tire protrusion beyond rim ≈ (tire_width_mm - rim_width_mm) / 2
- * Total outer = outer_offset + tire_protrusion
- * Total inner = ET + tire_protrusion
- */
-function calcET(old: WheelSpec, newer: WheelSpec): ETResult | null {
-  const owInch = parseFloat(old.widthInch);
-  const oET = parseFloat(old.et);
-  const nwInch = parseFloat(newer.widthInch);
-  const nET = parseFloat(newer.et);
-  if ([owInch, oET, nwInch, nET].some(isNaN)) return null;
+  oldProt: number;
+  newProt: number;
+};
 
-  const owMm = inchToMm(owInch);
-  const nwMm = inchToMm(nwInch);
+const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 
-  const otw = old.tireWidth ? parseFloat(old.tireWidth) : owMm;
-  const ntw = newer.tireWidth ? parseFloat(newer.tireWidth) : nwMm;
-
-  const oProt = Math.max(0, (otw - owMm) / 2);
-  const nProt = Math.max(0, (ntw - nwMm) / 2);
-
-  // Inner edge from hub (positive = towards brake calliper)
-  const oldInner = oET + oProt;
-  const newInner = nET + nProt;
-
-  // Outer edge from hub
-  const oldOuter = owMm - oET + oProt;
-  const newOuter = nwMm - nET + nProt;
-
-  // Track change per side (positive = wider)
-  const trackChangePerSide = newOuter - oldOuter;
-
-  return {
-    innerChangeA: newInner - oldInner,
-    innerChangeB: newInner,
-    outerChangeA: newOuter - oldOuter,
-    outerChangeB: newOuter,
-    trackChange: trackChangePerSide * 2,
-  };
-}
-
-function SignBadge({ value }: { value: number }) {
-  const cls =
-    value > 15
-      ? 'bg-red-100 text-red-700 border-red-200'
-      : value > 5
-      ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
-      : 'bg-green-100 text-green-700 border-green-200';
-  return (
-    <span className={`inline-block rounded-full border px-2 py-0.5 text-xs font-semibold font-mono ${cls}`}>
-      {value >= 0 ? '+' : ''}{value.toFixed(1)} mm
-    </span>
-  );
-}
-
-function WheelInputGroup({
-  label,
-  value,
-  onChange,
-  id,
-  showTire,
-}: {
-  label: string;
-  value: WheelSpec;
-  onChange: (v: WheelSpec) => void;
-  id: string;
-  showTire: boolean;
-}) {
-  return (
-    <fieldset className="rounded-2xl border border-slate-200 p-5 bg-white">
-      <legend className="px-2 text-sm font-semibold text-slate-700 -mt-3 bg-white">{label}</legend>
-      <div className={`grid gap-3 mt-2 ${showTire ? 'grid-cols-3' : 'grid-cols-2'}`}>
-        <div>
-          <label htmlFor={`${id}-w`} className="label-text">Breite (Zoll)</label>
-          <input
-            id={`${id}-w`}
-            type="number"
-            className="input-field"
-            placeholder="7.0"
-            min={4} max={14} step={0.5}
-            value={value.widthInch}
-            onChange={(e) => onChange({ ...value, widthInch: e.target.value })}
-          />
-        </div>
-        <div>
-          <label htmlFor={`${id}-et`} className="label-text">ET (mm)</label>
-          <input
-            id={`${id}-et`}
-            type="number"
-            className="input-field"
-            placeholder="35"
-            min={-100} max={120} step={1}
-            value={value.et}
-            onChange={(e) => onChange({ ...value, et: e.target.value })}
-          />
-        </div>
-        {showTire && (
-          <div>
-            <label htmlFor={`${id}-tw`} className="label-text">Reifen (mm, opt.)</label>
-            <input
-              id={`${id}-tw`}
-              type="number"
-              className="input-field"
-              placeholder="205"
-              min={100} max={400} step={5}
-              value={value.tireWidth ?? ''}
-              onChange={(e) => onChange({ ...value, tireWidth: e.target.value })}
-            />
-          </div>
-        )}
-      </div>
-    </fieldset>
-  );
-}
+// Tire protrusion beyond the rim per side (very rough). Real bulge depends on tire model and rim design.
+const protrusionMm = (tireWidthMm: number, rimWidthMm: number) => {
+  const p = (tireWidthMm - rimWidthMm) / 2;
+  return Math.max(0, p);
+};
 
 export function FelgenETClient() {
-  const [showTire, setShowTire] = useState(false);
-  const [oldWheel, setOldWheel] = useState<WheelSpec>({ widthInch: '7', et: '35' });
-  const [newWheel, setNewWheel] = useState<WheelSpec>({ widthInch: '8', et: '30' });
+  const [oldWidthIn, setOldWidthIn] = useState(7.5);
+  const [oldET, setOldET] = useState(45);
+  const [oldTireWidth, setOldTireWidth] = useState(225);
 
-  const result = calcET(oldWheel, newWheel);
+  const [newWidthIn, setNewWidthIn] = useState(8);
+  const [newET, setNewET] = useState(35);
+  const [newTireWidth, setNewTireWidth] = useState(235);
+
+  const result = useMemo<ETResult>(() => {
+    // Convert rim width from inches to mm
+    const oW = oldWidthIn * 25.4;
+    const nW = newWidthIn * 25.4;
+
+    const oHalf = oW / 2;
+    const nHalf = nW / 2;
+
+    const oProt = protrusionMm(oldTireWidth, oW);
+    const nProt = protrusionMm(newTireWidth, nW);
+
+    // Geometry (mm) relative to hub mounting face:
+    // inner edge distance = half width + ET
+    // outer edge distance = half width - ET
+    // Then we add a very rough tire protrusion estimate on both sides.
+    const oldInner = oHalf + oldET + oProt;
+    const oldOuter = oHalf - oldET + oProt;
+    const newInner = nHalf + newET + nProt;
+    const newOuter = nHalf - newET + nProt;
+
+    const innerEdgeChange = newInner - oldInner;
+    const outerEdgeChange = newOuter - oldOuter;
+
+    // Centerline shift depends only on offset (ET): smaller ET pushes the wheel outward.
+    const centerShift = oldET - newET;
+    const trackChange = 2 * centerShift;
+
+    return {
+      innerEdgeChange,
+      outerEdgeChange,
+      centerShift,
+      trackChange,
+      oldInner,
+      oldOuter,
+      newInner,
+      newOuter,
+      oldProt: oProt,
+      newProt: nProt,
+    };
+  }, [oldWidthIn, oldET, oldTireWidth, newWidthIn, newET, newTireWidth]);
+
+  const innerText = result.innerEdgeChange >= 0
+    ? `Innenkante rückt um ${result.innerEdgeChange.toFixed(1)} mm näher an Federbein/Innenradhaus (weniger Platz).`
+    : `Innenkante gewinnt ${Math.abs(result.innerEdgeChange).toFixed(1)} mm mehr Platz (mehr Freigängigkeit).`;
+
+  const outerText = result.outerEdgeChange >= 0
+    ? `Außenkante steht um ${result.outerEdgeChange.toFixed(1)} mm weiter raus Richtung Kotflügel.`
+    : `Außenkante sitzt um ${Math.abs(result.outerEdgeChange).toFixed(1)} mm weiter drin.`;
+
+  const trackText = result.trackChange === 0
+    ? 'Spurweite bleibt (rechnerisch) gleich.'
+    : (result.trackChange > 0
+      ? `Spurweite wird um ca. ${result.trackChange.toFixed(1)} mm breiter (≈ ${result.centerShift.toFixed(1)} mm pro Seite).`
+      : `Spurweite wird um ca. ${Math.abs(result.trackChange).toFixed(1)} mm schmaler (≈ ${Math.abs(result.centerShift).toFixed(1)} mm pro Seite).`);
+
+  // Quick risk hint (very rough). Anything beyond ~10–15 mm change can easily create clearance issues.
+  const riskScore = Math.abs(result.innerEdgeChange) + Math.abs(result.outerEdgeChange);
+  const riskLabel = riskScore < 10 ? 'niedrig' : riskScore < 25 ? 'mittel' : 'hoch';
 
   return (
-    <div>
-      <div className="mb-4 flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="show-tire"
-          checked={showTire}
-          onChange={(e) => setShowTire(e.target.checked)}
-          className="h-4 w-4 rounded border-slate-300 text-brand-600"
-        />
-        <label htmlFor="show-tire" className="text-sm text-slate-600 cursor-pointer">
-          Reifenbreite optional angeben (für exaktere Kantenberechnung)
-        </label>
+    <div className="space-y-8">
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+          <h2 className="text-base font-semibold text-slate-900">Aktuelle Felge</h2>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <label className="text-sm">
+              <span className="block text-slate-600 mb-1">Breite (J)</span>
+              <input
+                type="number"
+                step="0.5"
+                value={oldWidthIn}
+                onChange={(e) => setOldWidthIn(clamp(Number(e.target.value), 4, 13))}
+                className="input"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="block text-slate-600 mb-1">ET (mm)</span>
+              <input
+                type="number"
+                step="1"
+                value={oldET}
+                onChange={(e) => setOldET(clamp(Number(e.target.value), -20, 80))}
+                className="input"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="block text-slate-600 mb-1">Reifenbreite (mm)</span>
+              <input
+                type="number"
+                step="5"
+                value={oldTireWidth}
+                onChange={(e) => setOldTireWidth(clamp(Number(e.target.value), 135, 355))}
+                className="input"
+              />
+            </label>
+          </div>
+          <p className="mt-3 text-xs text-slate-500">
+            Hinweis: Reifen stehen i.d.R. etwas über die Felge über ("Bulge"). Das wird hier grob geschätzt.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+          <h2 className="text-base font-semibold text-slate-900">Neue Felge</h2>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <label className="text-sm">
+              <span className="block text-slate-600 mb-1">Breite (J)</span>
+              <input
+                type="number"
+                step="0.5"
+                value={newWidthIn}
+                onChange={(e) => setNewWidthIn(clamp(Number(e.target.value), 4, 13))}
+                className="input"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="block text-slate-600 mb-1">ET (mm)</span>
+              <input
+                type="number"
+                step="1"
+                value={newET}
+                onChange={(e) => setNewET(clamp(Number(e.target.value), -20, 80))}
+                className="input"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="block text-slate-600 mb-1">Reifenbreite (mm)</span>
+              <input
+                type="number"
+                step="5"
+                value={newTireWidth}
+                onChange={(e) => setNewTireWidth(clamp(Number(e.target.value), 135, 355))}
+                className="input"
+              />
+            </label>
+          </div>
+          <p className="mt-3 text-xs text-slate-500">
+            Typische Werte: ET 30–55 (PKW). Extreme Werte können ohne Karosseriearbeiten schnell problematisch werden.
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <WheelInputGroup label="Alt-Felge (Original)" value={oldWheel} onChange={setOldWheel} id="old" showTire={showTire} />
-        <WheelInputGroup label="Neu-Felge (Alternative)" value={newWheel} onChange={setNewWheel} id="new" showTire={showTire} />
-      </div>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+        <h2 className="text-base font-semibold text-slate-900">Ergebnis</h2>
 
-      {result ? (
-        <div className="mt-8 space-y-5">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="result-card">
-              <p className="text-xs font-semibold uppercase tracking-wider text-brand-600 mb-3">Innenkante</p>
-              <p className="text-sm text-slate-500 mb-1">Änderung:</p>
-              <SignBadge value={result.innerChangeA} />
-              <p className="mt-2 text-xs text-slate-400">
-                {result.innerChangeA > 0
-                  ? 'Innenkante rückt näher an Bremse/Federbein.'
-                  : result.innerChangeA < 0
-                  ? 'Innenkante rückt weiter weg von Bremse/Federbein.'
-                  : 'Keine Änderung.'}
-              </p>
-            </div>
-
-            <div className="result-card">
-              <p className="text-xs font-semibold uppercase tracking-wider text-brand-600 mb-3">Außenkante</p>
-              <p className="text-sm text-slate-500 mb-1">Änderung:</p>
-              <SignBadge value={result.outerChangeA} />
-              <p className="mt-2 text-xs text-slate-400">
-                {result.outerChangeA > 0
-                  ? 'Außenkante tritt weiter aus dem Radkasten hervor.'
-                  : result.outerChangeA < 0
-                  ? 'Außenkante zieht sich weiter in den Radkasten zurück.'
-                  : 'Keine Änderung.'}
-              </p>
-            </div>
-
-            <div className="result-card">
-              <p className="text-xs font-semibold uppercase tracking-wider text-brand-600 mb-3">Spurweite (gesamt)</p>
-              <p className="text-sm text-slate-500 mb-1">Gesamtänderung:</p>
-              <SignBadge value={result.trackChange} />
-              <p className="mt-2 text-xs text-slate-400">
-                {result.trackChange > 0
-                  ? 'Spurweite verbreitert sich (beide Seiten).'
-                  : result.trackChange < 0
-                  ? 'Spurweite verengt sich (beide Seiten).'
-                  : 'Spurweite unverändert.'}
-              </p>
-            </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Innen</div>
+            <div className="mt-1 text-sm text-slate-800">{innerText}</div>
           </div>
-
-          {/* Warning box – per spec */}
-          <div className="warning-box flex gap-3">
-            <span className="shrink-0 text-xl" aria-hidden="true">⚠️</span>
-            <div>
-              <p className="font-semibold mb-1">Nur zur Orientierung – kein Ersatz für Fachprüfung</p>
-              <p>
-                Diese Berechnung basiert ausschließlich auf geometrischen Formeln ohne Fahrzeugdaten.
-                Freigängigkeit (Kotflügel, Bremssattel, Feder), ABE, Fahrzeugbrief-Eintragung und
-                TÜV-Abnahme müssen separat geprüft werden. Fahren mit nicht abgenommenen Rädern ist
-                in Deutschland ordnungswidrig (StVZO § 19).
-              </p>
-            </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Außen</div>
+            <div className="mt-1 text-sm text-slate-800">{outerText}</div>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Spurweite</div>
+            <div className="mt-1 text-sm text-slate-800">{trackText}</div>
           </div>
         </div>
-      ) : (
-        <div className="mt-6 rounded-xl border-2 border-dashed border-slate-200 py-10 text-center text-slate-400">
-          <p className="text-2xl mb-2" aria-hidden="true">⚙️</p>
-          <p className="text-sm">Gib Felgenbreite und ET für Alt- und Neu-Felge ein.</p>
+
+        <div className="mt-6 grid gap-3 md:grid-cols-2">
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="text-sm font-semibold text-slate-800">Detailwerte (mm ab Nabenauflage)</div>
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <dt className="text-slate-500">Alt innen / außen</dt>
+              <dd className="text-slate-800">{result.oldInner.toFixed(1)} / {result.oldOuter.toFixed(1)}</dd>
+              <dt className="text-slate-500">Neu innen / außen</dt>
+              <dd className="text-slate-800">{result.newInner.toFixed(1)} / {result.newOuter.toFixed(1)}</dd>
+              <dt className="text-slate-500">Schätz-Bulge alt / neu</dt>
+              <dd className="text-slate-800">{result.oldProt.toFixed(1)} / {result.newProt.toFixed(1)}</dd>
+            </dl>
+          </div>
+
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div className="text-sm font-semibold text-amber-900">Risiko-Einschätzung (grob)</div>
+            <p className="mt-2 text-sm text-amber-900">
+              Gesamtänderung (Innen+Außen): <strong>{riskScore.toFixed(1)} mm</strong> → Risiko: <strong>{riskLabel}</strong>
+            </p>
+            <p className="mt-2 text-xs text-amber-800">
+              Das ist keine Freigabe. Entscheidend sind: Fahrzeug/Lenkeinschlag, Sturz, Fahrwerk, ET/Toleranzen, Reifenmodell, Felgenhorn.
+              Wenn Innenkante deutlich näher kommt oder Außenkante deutlich weiter raussteht: unbedingt am Auto prüfen.
+            </p>
+          </div>
         </div>
-      )}
+      </section>
+
+      <section className="text-sm text-slate-600 leading-relaxed">
+        <h3 className="text-base font-semibold text-slate-900 mb-2">Wie werden die Werte berechnet?</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong>ET (Einpresstiefe)</strong> ist der Abstand zwischen Felgenmitte und Nabenauflagefläche.</li>
+          <li>Innenkante ≈ <code>Felgenbreite/2 + ET</code>, Außenkante ≈ <code>Felgenbreite/2 − ET</code>.</li>
+          <li>Reifen stehen oft über die Felge. Wir schätzen das als <code>(Reifenbreite − Felgenbreite)/2</code> pro Seite.</li>
+          <li><strong>Spurweite</strong> basiert hier auf der Verschiebung der Radmitte (nur ET): <code>2 × (ET_alt − ET_neu)</code>.</li>
+        </ul>
+      </section>
     </div>
   );
 }

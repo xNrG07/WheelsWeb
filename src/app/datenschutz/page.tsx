@@ -1,119 +1,94 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
   title: 'Datenschutzerklärung',
-  description: 'Datenschutzerklärung von ReifenSetup – Informationen zu Datenverarbeitung, Cookies und Google AdSense.',
-  robots: { index: false, follow: false },
+  description: 'Datenschutzerklärung für ReifenSetup – Informationen zu Datenverarbeitung, Cookies/LocalStorage und ggf. Werbung (Google AdSense).',
   alternates: { canonical: '/datenschutz' },
+  robots: { index: false, follow: false },
 };
 
 export default function DatenschutzPage() {
   return (
-    <div className="section-container py-10 max-w-2xl">
-      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-slate-500">
-        <ol className="flex items-center gap-1.5">
-          <li><Link href="/" className="hover:text-brand-600">Startseite</Link></li>
-          <li aria-hidden="true">/</li>
-          <li className="text-slate-700 font-medium">Datenschutz</li>
-        </ol>
-      </nav>
+    <div className="space-y-8">
+      <header className="space-y-2">
+        <h1 className="text-2xl font-semibold text-slate-900">Datenschutzerklärung</h1>
+        <p className="text-slate-600">
+          Diese Seite ist ein Template. <strong>Du musst Betreiber- und Kontaktangaben</strong> (Firma/Name, Adresse, E-Mail)
+          sowie ggf. Auftragsverarbeiter (Hosting) anpassen.
+        </p>
+      </header>
 
-      <h1 className="page-title mb-8">Datenschutzerklärung</h1>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
+        <h2 className="text-base font-semibold text-slate-900">1. Verantwortlicher</h2>
+        <p className="text-sm text-slate-700">
+          <strong>[Dein Name/Firma]</strong><br />
+          <strong>[Adresse]</strong><br />
+          <strong>E-Mail:</strong> [kontakt@deinedomain.tld]
+        </p>
+      </section>
 
-      <div className="space-y-8 text-sm text-slate-700 leading-relaxed">
-        <section>
-          <h2 className="font-semibold text-slate-900 text-base mb-2">1. Verantwortlicher</h2>
-          <address className="not-italic">
-            <p>[Vorname Nachname / Firma]</p>
-            <p>[Straße Hausnummer, PLZ Ort]</p>
-            <p>E-Mail: <a href="mailto:kontakt@reifensetup.de" className="text-brand-600">kontakt@reifensetup.de</a></p>
-          </address>
-        </section>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
+        <h2 className="text-base font-semibold text-slate-900">2. Welche Daten werden verarbeitet?</h2>
+        <ul className="list-disc pl-5 space-y-2 text-sm text-slate-700">
+          <li>
+            <strong>Server-Logfiles (Hosting):</strong> Bei jedem Aufruf werden technisch notwendige Daten verarbeitet (IP-Adresse, Datum/Uhrzeit,
+            User-Agent, Referrer, angeforderte URL, Statuscode). Das ist Standard beim Webhosting.
+          </li>
+          <li>
+            <strong>Lokale Speicherung (LocalStorage):</strong> Diese Website speichert optional Einstellungen (z.B. Dark Mode oder Werbe-Einwilligung)
+            im Browser über <code>localStorage</code>. Das ist kein Cookie, sondern lokale Browser-Speicherung.
+          </li>
+          <li>
+            <strong>Kontaktformular:</strong> Wenn du das Formular nutzt, werden die von dir eingegebenen Daten verarbeitet.
+            In diesem Projekt ist das Formular nur als UI vorhanden (ohne Backend-Versand) – falls du später E-Mail/CRM anbindest,
+            musst du das hier ergänzen.
+          </li>
+        </ul>
+      </section>
 
-        <section>
-          <h2 className="font-semibold text-slate-900 text-base mb-2">2. Grundsätzliches zur Datenverarbeitung</h2>
-          <p>
-            Die Tools auf ReifenSetup (Reifenrechner, Felgen ET-Check, DOT-Decoder) werden ausschließlich
-            clientseitig im Browser berechnet. Es werden keine Eingaben an unsere Server übermittelt.
-          </p>
-          <p className="mt-2">
-            Beim Besuch der Website werden automatisch technische Daten (IP-Adresse, Browser, Betriebssystem,
-            Referrer, Datum/Uhrzeit) im Rahmen des Hostings verarbeitet. Rechtsgrundlage: Art. 6 Abs. 1
-            lit. f DSGVO (berechtigtes Interesse am Betrieb des Dienstes).
-          </p>
-        </section>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
+        <h2 className="text-base font-semibold text-slate-900">3. Werbung (Google AdSense)</h2>
+        <p className="text-sm text-slate-700">
+          Wenn Werbung aktiviert ist, kann Google (Google Ireland Limited) Technologien einsetzen, um Anzeigen auszuliefern.
+          Dabei können personenbezogene Daten verarbeitet werden (z.B. Online-IDs, IP-Adresse, Interaktionen).
+        </p>
+        <ul className="list-disc pl-5 space-y-2 text-sm text-slate-700">
+          <li>
+            <strong>Einwilligung:</strong> Diese Website ist so gebaut, dass Anzeigen erst nach Einwilligung angezeigt werden (sofern konfiguriert).
+          </li>
+          <li>
+            <strong>EEA/UK/CH:</strong> Für personalisierte Werbung verlangt Google für Traffic aus dem EWR/UK/CH eine <strong>Google-zertifizierte CMP</strong>
+            (Consent Management Platform). Ein selbst gebautes Banner reicht dafür nicht.
+          </li>
+          <li>
+            <strong>Google Funding Choices:</strong> Wenn du Google Privacy &amp; Messaging / Funding Choices nutzt, wird die Einwilligung dort verwaltet.
+            Dann solltest du Einwilligungs- und Widerrufsfunktionen über dieses System anbieten.
+          </li>
+        </ul>
+        <p className="text-xs text-slate-500">
+          Domain/Betreiber müssen in Google AdSense korrekt hinterlegt sein. Außerdem brauchst du üblicherweise eine <code>ads.txt</code>.
+        </p>
+      </section>
 
-        <section>
-          <h2 className="font-semibold text-slate-900 text-base mb-2">3. Cookies</h2>
-          <p>
-            Wir setzen zwei Kategorien von Cookies ein:
-          </p>
-          <ul className="mt-2 space-y-2 list-disc list-inside">
-            <li>
-              <strong>Notwendige Cookies:</strong> Das Cookie <code className="font-mono bg-slate-100 rounded px-1">rs_consent_v1</code> speichert
-              Ihre Cookie-Einwilligung im <code className="font-mono bg-slate-100 rounded px-1">localStorage</code>. Keine Übermittlung an Dritte.
-              Rechtsgrundlage: Art. 6 Abs. 1 lit. c DSGVO.
-            </li>
-            <li>
-              <strong>Marketing-Cookies (optional):</strong> Wenn Sie der Nutzung von Marketing-Cookies
-              zustimmen, wird Google AdSense geladen (siehe Abschnitt 4).
-            </li>
-          </ul>
-        </section>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
+        <h2 className="text-base font-semibold text-slate-900">4. Rechtsgrundlagen (Kurzüberblick)</h2>
+        <p className="text-sm text-slate-700">
+          Typisch sind (je nach Setup): <strong>Art. 6 Abs. 1 lit. f DSGVO</strong> (berechtigtes Interesse – Betrieb/Sicherheit),
+          <strong>Art. 6 Abs. 1 lit. b DSGVO</strong> (Vertrag/Vorvertrag – z.B. Anfrage), und <strong>Art. 6 Abs. 1 lit. a DSGVO</strong> (Einwilligung – z.B. Marketing/Ads).
+          Das ist keine Rechtsberatung.
+        </p>
+      </section>
 
-        <section>
-          <h2 className="font-semibold text-slate-900 text-base mb-2">4. Google AdSense</h2>
-          <p>
-            Mit Ihrer Einwilligung in Marketing-Cookies binden wir Google AdSense ein.
-            Betreiber: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.
-          </p>
-          <p className="mt-2">
-            Google AdSense verwendet Cookies und Web-Beacons, um personalisierte Werbung
-            auszuspielen. Google kann dabei Ihre IP-Adresse und weitere Browserinformationen
-            verarbeiten und in Länder außerhalb der EU übermitteln. Rechtsgrundlage:
-            Art. 6 Abs. 1 lit. a DSGVO (Einwilligung).
-          </p>
-          <p className="mt-2">
-            Datenschutzerklärung Google:{' '}
-            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline">
-              https://policies.google.com/privacy
-            </a>
-          </p>
-          <p className="mt-2">
-            Sie können Ihre Einwilligung jederzeit widerrufen, indem Sie den Cookie-Consent-Banner
-            über die Schaltfläche in der Fußzeile neu aufrufen und nur notwendige Cookies auswählen.
-            Alternativ können Sie personalisierte Werbung unter{' '}
-            <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline">
-              adssettings.google.com
-            </a>{' '}
-            deaktivieren.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="font-semibold text-slate-900 text-base mb-2">5. Ihre Rechte (DSGVO)</h2>
-          <p>Sie haben das Recht auf:</p>
-          <ul className="mt-2 space-y-1 list-disc list-inside">
-            <li>Auskunft über gespeicherte Daten (Art. 15 DSGVO)</li>
-            <li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>
-            <li>Löschung (Art. 17 DSGVO)</li>
-            <li>Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
-            <li>Datenübertragbarkeit (Art. 20 DSGVO)</li>
-            <li>Widerspruch (Art. 21 DSGVO)</li>
-            <li>Beschwerde bei einer Aufsichtsbehörde (Art. 77 DSGVO)</li>
-          </ul>
-          <p className="mt-2">
-            Kontakt für Datenschutzanfragen: <a href="mailto:kontakt@reifensetup.de" className="text-brand-600 hover:underline">kontakt@reifensetup.de</a>
-          </p>
-        </section>
-
-        <section>
-          <h2 className="font-semibold text-slate-900 text-base mb-2">6. Änderungen</h2>
-          <p>Stand: Januar 2025. Wir behalten uns vor, diese Erklärung bei Änderungen der Rechtslage oder
-          unseres Angebots zu aktualisieren.</p>
-        </section>
-      </div>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
+        <h2 className="text-base font-semibold text-slate-900">5. Kontakt</h2>
+        <p className="text-sm text-slate-700">
+          Fragen zum Datenschutz: <strong>[datenschutz@deinedomain.tld]</strong>
+        </p>
+        <p className="text-xs text-slate-500">
+          Website: {siteConfig.name} ({siteConfig.url})
+        </p>
+      </section>
     </div>
   );
 }

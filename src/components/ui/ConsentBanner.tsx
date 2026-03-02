@@ -1,20 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AD_CONFIG } from '@/lib/config';
+
+// All code comments are in English as requested by the project convention.
 
 type ConsentState = {
   necessary: true;
-  marketing: boolean;
+  ads: boolean;
   decided: boolean;
 };
 
-const STORAGE_KEY = 'rs_consent_v1';
+export const CONSENT_STORAGE_KEY = 'rs_consent_v1';
 
 function loadConsent(): ConsentState | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(CONSENT_STORAGE_KEY);
     if (!raw) return null;
     return JSON.parse(raw);
   } catch {
@@ -23,43 +24,23 @@ function loadConsent(): ConsentState | null {
 }
 
 function saveConsent(state: ConsentState) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function injectAdSense(publisherId: string) {
-  if (document.getElementById('adsense-script')) return;
-  const script = document.createElement('script');
-  script.id = 'adsense-script';
-  script.async = true;
-  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`;
-  script.crossOrigin = 'anonymous';
-  document.head.appendChild(script);
+  localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(state));
+  // Notify listeners in the same tab
+  window.dispatchEvent(new Event('rs-consent-changed'));
 }
 
 export function ConsentBanner() {
   const [visible, setVisible] = useState(false);
-  const [consent, setConsent] = useState<ConsentState | null>(null);
 
   useEffect(() => {
     const stored = loadConsent();
-    if (!stored) {
-      setVisible(true);
-    } else {
-      setConsent(stored);
-      if (stored.marketing && AD_CONFIG.ENABLED) {
-        injectAdSense(AD_CONFIG.PUBLISHER_ID);
-      }
-    }
+    setVisible(!stored);
   }, []);
 
-  function accept(marketing: boolean) {
-    const state: ConsentState = { necessary: true, marketing, decided: true };
+  function accept(ads: boolean) {
+    const state: ConsentState = { necessary: true, ads, decided: true };
     saveConsent(state);
-    setConsent(state);
     setVisible(false);
-    if (marketing && AD_CONFIG.ENABLED) {
-      injectAdSense(AD_CONFIG.PUBLISHER_ID);
-    }
   }
 
   if (!visible) return null;
@@ -68,45 +49,43 @@ export function ConsentBanner() {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Cookie-Einstellungen"
+      aria-label="Datenschutz-Einstellungen"
       aria-live="polite"
       className="consent-banner fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white px-4 py-5 shadow-xl sm:px-6"
     >
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex-1">
-            <p className="text-sm font-semibold text-slate-900 mb-1">
-              🍪 Datenschutz-Einstellungen
-            </p>
+            <p className="text-sm font-semibold text-slate-900 mb-1">🍪 Einstellungen</p>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Wir verwenden technisch notwendige Cookies. Mit Ihrer Zustimmung laden wir außerdem Google AdSense für personalisierte Werbung.{' '}
+              Wir speichern technisch notwendige Einstellungen lokal im Browser. Mit deiner Zustimmung laden wir zusätzlich
+              Google AdSense (Werbung).{' '}
               <a href="/datenschutz" className="underline text-brand-600 hover:text-brand-700">
                 Mehr erfahren
               </a>
             </p>
             <div className="mt-2 flex gap-4 text-xs text-slate-500">
               <span className="flex items-center gap-1">
-                <span className="inline-block h-2 w-2 rounded-full bg-green-500" aria-hidden="true"></span>
-                Notwendige Cookies: immer aktiv
+                <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                Notwendig: immer aktiv
               </span>
               <span className="flex items-center gap-1">
                 <span className="inline-block h-2 w-2 rounded-full bg-slate-300" aria-hidden="true"></span>
-                Marketing (Google AdSense): optional
+                Werbung (AdSense): optional
               </span>
             </div>
+            <p className="mt-2 text-[11px] text-slate-400">
+              Hinweis: Für Traffic aus EWR/UK/CH kann für personalisierte Werbung eine Google-zertifizierte CMP erforderlich sein.
+              Dieses einfache Banner ist dafür nicht automatisch ausreichend.
+            </p>
           </div>
+
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-            <button
-              onClick={() => accept(false)}
-              className="btn-secondary text-sm px-4 py-2"
-            >
-              Nur notwendige
+            <button onClick={() => accept(false)} className="btn-secondary text-sm px-4 py-2">
+              Nur notwendig
             </button>
-            <button
-              onClick={() => accept(true)}
-              className="btn-primary text-sm px-4 py-2"
-            >
-              Alle akzeptieren
+            <button onClick={() => accept(true)} className="btn-primary text-sm px-4 py-2">
+              Zustimmen
             </button>
           </div>
         </div>
@@ -115,12 +94,30 @@ export function ConsentBanner() {
   );
 }
 
-/** Hook: read current consent state in any component */
-export function useMarketingConsent(): boolean {
+// Hook: read current ad consent state.
+export function useAdsConsent(): boolean {
   const [ok, setOk] = useState(false);
+
   useEffect(() => {
-    const stored = loadConsent();
-    setOk(!!stored?.marketing);
+    const read = () => {
+      const stored = loadConsent();
+      setOk(!!stored?.ads);
+    };
+
+    read();
+    window.addEventListener('storage', read);
+    window.addEventListener('rs-consent-changed', read);
+    return () => {
+      window.removeEventListener('storage', read);
+      window.removeEventListener('rs-consent-changed', read);
+    };
   }, []);
+
   return ok;
+}
+
+export function resetConsent() {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(CONSENT_STORAGE_KEY);
+  window.dispatchEvent(new Event('rs-consent-changed'));
 }

@@ -1,248 +1,247 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-type AgeStatus = 'ok' | 'alt' | 'sehr_alt';
+// All code comments are in English as requested by the project convention.
 
-interface DOTResult {
-  week: number;
-  year: number;
-  productionDate: Date;
-  ageMonths: number;
-  status: AgeStatus;
-}
-
-const STATUS_MAP: Record<AgeStatus, { label: string; color: string; icon: string; advice: string }> = {
-  ok: {
-    label: 'OK',
-    color: 'dot-green border',
-    icon: '🟢',
-    advice: 'Reifen ist weniger als 6 Jahre alt. Kein akuter Handlungsbedarf – regelmäßige Sichtprüfung empfohlen.',
-  },
-  alt: {
-    label: 'Alt – prüfen',
-    color: 'dot-yellow border',
-    icon: '🟡',
-    advice: 'Reifen ist 6–10 Jahre alt. Fachliche Inspektion auf Risse, Porösität und Profiltiefe empfohlen.',
-  },
-  sehr_alt: {
-    label: 'Sehr alt – ersetzen',
-    color: 'dot-red border',
-    icon: '🔴',
-    advice: 'Reifen ist über 10 Jahre alt. Austausch dringend empfohlen – Sicherheitsrisiko durch Materialalterung.',
-  },
+type DotResult = {
+  valid: boolean;
+  week?: number;
+  year?: number;
+  date?: Date;
+  ageMonths?: number;
+  warning?: string;
 };
 
-function parseDOT(raw: string): DOTResult | null {
-  const cleaned = raw.replace(/\s+/g, '').toUpperCase();
-  // Extract last 4 digits (WWYY) or last 3 (pre-2000: WWY not supported well → try 4-digit at end)
-  const match4 = cleaned.match(/(\d{2})(\d{2})(?:\D|$)/);
-  // Try known patterns: "DOT ...WWYY" or just "WWYY" or "WWWYY" 6-char
-  let week = 0, year = 0;
+const pad2 = (n: number) => String(n).padStart(2, '0');
 
-  // Pattern: last 4 digits at end of string
-  const tail4 = cleaned.match(/(\d{2})(\d{2})$/);
-  const tail6 = cleaned.match(/(\d{2})(\d{2})(\d{2})$/);
+// Convert ISO week number to the Monday date of that week (UTC-based to avoid TZ drift).
+function isoWeekMondayUTC(year: number, week: number): Date {
+  // ISO week 1 is the week that contains Jan 4.
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const jan4Dow = jan4.getUTCDay() || 7; // 1..7 (Mon..Sun)
+  const mondayWeek1 = new Date(jan4);
+  mondayWeek1.setUTCDate(jan4.getUTCDate() - (jan4Dow - 1));
 
-  if (tail6) {
-    // 6-char DOT: first 2 = week, last 4 = year (e.g. 232019 = week 23, 2019)
-    const w = parseInt(tail6[1]);
-    const y = parseInt(tail6[2] + tail6[3]);
-    if (w >= 1 && w <= 53 && y >= 1990 && y <= 2099) {
-      week = w; year = y;
-    }
-  }
-
-  if ((!week || !year) && tail4) {
-    const w = parseInt(tail4[1]);
-    const y2 = parseInt(tail4[2]);
-    const y = y2 >= 0 && y2 <= 25 ? 2000 + y2 : 1900 + y2;
-    if (w >= 1 && w <= 53 && y >= 1990 && y <= 2099) {
-      week = w; year = y;
-    }
-  }
-
-  if (!week || !year) return null;
-
-  // Jan 1 of year + (week-1)*7 days
-  const jan1 = new Date(year, 0, 1);
-  const productionDate = new Date(jan1.getTime() + (week - 1) * 7 * 24 * 3600 * 1000);
-  const now = new Date();
-  const ageMonths = (now.getFullYear() - productionDate.getFullYear()) * 12 +
-    (now.getMonth() - productionDate.getMonth());
-
-  let status: AgeStatus;
-  if (ageMonths < 72) status = 'ok';
-  else if (ageMonths < 120) status = 'alt';
-  else status = 'sehr_alt';
-
-  return { week, year, productionDate, ageMonths, status };
+  const monday = new Date(mondayWeek1);
+  monday.setUTCDate(mondayWeek1.getUTCDate() + (week - 1) * 7);
+  return monday;
 }
 
-function generateICal(result: DOTResult): void {
-  const reminderDate = new Date(result.productionDate);
-  reminderDate.setFullYear(reminderDate.getFullYear() + 6);
+function parseDOT(input: string): DotResult {
+  const raw = input.trim().toUpperCase();
+  const m4 = raw.match(/(\d{4})\s*$/);
+  const m6 = raw.match(/(\d{6})\s*$/);
 
-  const pad = (n: number) => String(n).padStart(2, '0');
-  const fmtDate = (d: Date) =>
-    `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
-
-  const uid = `reifen-${result.week}-${result.year}@reifensetup.de`;
   const now = new Date();
-  const stamp = `${fmtDate(now)}T${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}Z`;
+  const nowYear2 = now.getFullYear() % 100;
 
-  const ics = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//ReifenSetup//DOT-Decoder//DE',
-    'CALSCALE:GREGORIAN',
-    'BEGIN:VEVENT',
-    `UID:${uid}`,
-    `DTSTAMP:${stamp}`,
-    `DTSTART;VALUE=DATE:${fmtDate(reminderDate)}`,
-    `DTEND;VALUE=DATE:${fmtDate(reminderDate)}`,
-    `SUMMARY:Reifen-Check: Reifen aus KW ${result.week}/${result.year} prüfen`,
-    `DESCRIPTION:Dein Reifen (DOT KW ${result.week}/${result.year}) ist 6 Jahre alt. Lass ihn von einem Fachbetrieb prüfen.\\nquelle: reifensetup.de`,
-    'BEGIN:VALARM',
-    'TRIGGER:-P7D',
-    'ACTION:DISPLAY',
-    'DESCRIPTION:Reifen-Check Erinnerung',
-    'END:VALARM',
-    'END:VEVENT',
-    'END:VCALENDAR',
-  ].join('\r\n');
+  // Prefer last 4 digits (standard since 2000): WWYY
+  if (m4) {
+    const code = m4[1];
+    const week = parseInt(code.slice(0, 2), 10);
+    const y2 = parseInt(code.slice(2, 4), 10);
 
-  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `reifen-check-${result.year}-kw${result.week}.ics`;
-  a.click();
-  URL.revokeObjectURL(url);
+    if (!Number.isFinite(week) || week < 1 || week > 53) {
+      return { valid: false, warning: 'Ungültige Kalenderwoche (1–53).' };
+    }
+
+    // Heuristic: if YY <= current YY, assume 20YY, else 19YY.
+    // DOT before 2000 used different formats (3 digits), which this tool does not decode reliably.
+    const year = (y2 <= nowYear2 ? 2000 : 1900) + y2;
+    const date = isoWeekMondayUTC(year, week);
+
+    const ageMonths = (now.getFullYear() - year) * 12 + (now.getMonth() - date.getUTCMonth());
+
+    const warning = year < 2000
+      ? 'Hinweis: DOT-Codes vor 2000 wurden oft anders kodiert (3-stellig). Das Ergebnis kann bei sehr alten Reifen falsch sein.'
+      : undefined;
+
+    return { valid: true, week, year, date, ageMonths, warning };
+  }
+
+  // Some manufacturers include WWYYYY (6 digits)
+  if (m6) {
+    const code = m6[1];
+    const week = parseInt(code.slice(0, 2), 10);
+    const year = parseInt(code.slice(2, 6), 10);
+
+    if (!Number.isFinite(week) || week < 1 || week > 53) {
+      return { valid: false, warning: 'Ungültige Kalenderwoche (1–53).' };
+    }
+    if (!Number.isFinite(year) || year < 1980 || year > now.getFullYear() + 1) {
+      return { valid: false, warning: 'Jahr wirkt unplausibel.' };
+    }
+
+    const date = isoWeekMondayUTC(year, week);
+    const ageMonths = (now.getFullYear() - year) * 12 + (now.getMonth() - date.getUTCMonth());
+
+    return { valid: true, week, year, date, ageMonths };
+  }
+
+  return {
+    valid: false,
+    warning: 'Kein DOT-Datum gefunden. Erwartet werden die letzten 4 Ziffern (WWYY) oder 6 Ziffern (WWYYYY).',
+  };
+}
+
+function monthsToAgeString(months: number) {
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  if (y <= 0) return `${m} Monat(e)`;
+  if (m === 0) return `${y} Jahr(e)`;
+  return `${y} Jahr(e), ${m} Monat(e)`;
 }
 
 export function DOTDecoderClient() {
-  const [input, setInput] = useState('');
-  const [result, setResult] = useState<DOTResult | null>(null);
-  const [error, setError] = useState('');
+  const [dot, setDot] = useState('2325');
+  const [remindAtYears, setRemindAtYears] = useState(6);
 
-  function handleDecode() {
-    if (!input.trim()) return;
-    const r = parseDOT(input);
-    if (r) {
-      setResult(r);
-      setError('');
-    } else {
-      setResult(null);
-      setError(
-        'Kein gültiges DOT-Format erkannt. Bitte gib die letzten 4 Ziffern ein (z. B. "2319") oder den vollständigen DOT-Code.'
-      );
-    }
-  }
+  const res = useMemo(() => parseDOT(dot), [dot]);
 
-  const statusInfo = result ? STATUS_MAP[result.status] : null;
+  const reminderDate = useMemo(() => {
+    if (!res.valid || !res.date) return null;
+    const d = new Date(res.date);
+    d.setUTCFullYear(d.getUTCFullYear() + remindAtYears);
+    return d;
+  }, [res, remindAtYears]);
+
+  const downloadIcs = () => {
+    if (!reminderDate || !res.valid || !res.week || !res.year) return;
+
+    const dtStart = `${reminderDate.getUTCFullYear()}${pad2(reminderDate.getUTCMonth() + 1)}${pad2(reminderDate.getUTCDate())}`;
+
+    // All-day events should have DTEND = next day (exclusive).
+    const dtEndDate = new Date(reminderDate);
+    dtEndDate.setUTCDate(dtEndDate.getUTCDate() + 1);
+    const dtEnd = `${dtEndDate.getUTCFullYear()}${pad2(dtEndDate.getUTCMonth() + 1)}${pad2(dtEndDate.getUTCDate())}`;
+
+    const dtStamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+
+    const uid = `dot-${res.week}${String(res.year)}-${dtStart}@reifensetup`;
+    const summary = `Reifen-Check: DOT ${pad2(res.week)}/${res.year} ist jetzt ${remindAtYears} Jahre alt`;
+
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//ReifenSetup//DOT Reminder//DE',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      `UID:${uid}`,
+      `DTSTAMP:${dtStamp}`,
+      `DTSTART;VALUE=DATE:${dtStart}`,
+      `DTEND;VALUE=DATE:${dtEnd}`,
+      `SUMMARY:${summary}`,
+      'DESCRIPTION:Empfehlung: Reifenalter prüfen (Profil, Risse, DOT).',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dot-reminder-${dtStart}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(url);
+  };
 
   return (
-    <div>
-      <div className="max-w-md">
-        <label htmlFor="dot-input" className="label-text text-base">
-          DOT-Code eingeben
-        </label>
-        <p className="text-xs text-slate-500 mb-2">
-          Beispiele: <code className="font-mono bg-slate-100 rounded px-1">2319</code>{' '}
-          oder <code className="font-mono bg-slate-100 rounded px-1">232019</code>{' '}
-          oder <code className="font-mono bg-slate-100 rounded px-1">DOT U2LL LMLR 2319</code>
+    <div className="space-y-8">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+        <h2 className="text-base font-semibold text-slate-900">DOT eingeben</h2>
+        <p className="mt-2 text-sm text-slate-600">
+          Gib die letzten 4 Ziffern des DOT-Codes ein (Kalenderwoche + Jahr), z.B. <code>2325</code> für KW 23/2025.
+          Manche Hersteller verwenden 6 Ziffern (<code>232025</code> für KW 23/2025).
         </p>
-        <div className="flex gap-2">
-          <input
-            id="dot-input"
-            type="text"
-            className="input-field flex-1"
-            placeholder="z. B. 2319"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleDecode()}
-            aria-describedby="dot-hint"
-            maxLength={50}
-            autoComplete="off"
-          />
-          <button
-            onClick={handleDecode}
-            className="btn-primary shrink-0"
-            aria-label="DOT-Code dekodieren"
-          >
-            Dekodieren
-          </button>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <label className="text-sm">
+            <span className="block text-slate-600 mb-1">DOT (letzte Ziffern)</span>
+            <input
+              value={dot}
+              onChange={(e) => setDot(e.target.value)}
+              className="input"
+              placeholder="z.B. 2325"
+            />
+          </label>
+
+          <label className="text-sm">
+            <span className="block text-slate-600 mb-1">Erinnerung nach (Jahre)</span>
+            <input
+              type="number"
+              min={1}
+              max={15}
+              step={1}
+              value={remindAtYears}
+              onChange={(e) => setRemindAtYears(Math.max(1, Math.min(15, Number(e.target.value))))}
+              className="input"
+            />
+          </label>
         </div>
-        <p id="dot-hint" className="mt-1.5 text-xs text-slate-400">
-          Die letzten 4–6 Ziffern der Seitenwand-Prägung eingeben.
-        </p>
       </div>
 
-      {error && (
-        <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
-          {error}
-        </p>
-      )}
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+        <h2 className="text-base font-semibold text-slate-900">Ergebnis</h2>
 
-      {result && statusInfo && (
-        <div className="mt-8 space-y-5 max-w-lg">
-          {/* Main result card */}
-          <div className={`rounded-2xl border-2 p-6 ${statusInfo.color}`}>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl" aria-hidden="true">{statusInfo.icon}</span>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider opacity-70">Status</p>
-                <p className="text-xl font-bold">{statusInfo.label}</p>
+        {!res.valid ? (
+          <div className="mt-4 rounded-xl border border-red-100 bg-red-50 p-4">
+            <p className="text-sm text-red-800 font-medium">{res.warning ?? 'Ungültiger DOT-Code.'}</p>
+          </div>
+        ) : (
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Herstellungswoche</div>
+              <div className="mt-1 text-sm text-slate-800">KW {pad2(res.week!)} / {res.year}</div>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Ungefähres Datum</div>
+              <div className="mt-1 text-sm text-slate-800">{res.date?.toLocaleDateString('de-DE')}</div>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Alter (grobe Näherung)</div>
+              <div className="mt-1 text-sm text-slate-800">
+                {typeof res.ageMonths === 'number' ? monthsToAgeString(Math.max(0, res.ageMonths)) : '—'}
               </div>
             </div>
-
-            <dl className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <dt className="opacity-70">Produktion</dt>
-                <dd className="font-mono font-bold text-base">
-                  KW {result.week}/{result.year}
-                </dd>
-              </div>
-              <div>
-                <dt className="opacity-70">Alter</dt>
-                <dd className="font-mono font-bold text-base">
-                  {result.ageMonths >= 12
-                    ? `${Math.floor(result.ageMonths / 12)} J. ${result.ageMonths % 12} Mo.`
-                    : `${result.ageMonths} Monate`}
-                </dd>
-              </div>
-              <div>
-                <dt className="opacity-70">Produktionsdatum (ca.)</dt>
-                <dd className="font-mono font-medium">
-                  {result.productionDate.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}
-                </dd>
-              </div>
-              <div>
-                <dt className="opacity-70">Empfehlung</dt>
-                <dd className="font-medium text-xs leading-snug">{statusInfo.advice}</dd>
-              </div>
-            </dl>
           </div>
+        )}
 
-          {/* iCal button – clearly separated from result */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-sm text-slate-700 mb-3">
-              Erinnerung für die nächste Reifen-Inspektion in deinen Kalender eintragen:
+        {res.valid && res.warning && (
+          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm text-amber-900">{res.warning}</p>
+          </div>
+        )}
+
+        {res.valid && reminderDate && (
+          <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+            <div className="text-sm font-semibold text-slate-800">Kalender-Erinnerung</div>
+            <p className="mt-2 text-sm text-slate-600">
+              Erinnerung am <strong>{reminderDate.toLocaleDateString('de-DE')}</strong> erzeugen.
             </p>
             <button
-              onClick={() => generateICal(result)}
-              className="btn-secondary text-sm"
+              onClick={downloadIcs}
+              className="mt-3 inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft hover:bg-brand-700"
             >
-              📅 Reminder-Datei (.ics) herunterladen
+              .ics herunterladen
             </button>
-            <p className="mt-2 text-xs text-slate-400">
-              Wird clientseitig generiert – keine Daten verlassen deinen Browser.
-              Erinnerung wird auf KW {result.week}/{result.year + 6} gesetzt (6 Jahre nach Produktion).
+            <p className="mt-2 text-xs text-slate-500">
+              iCal-Hinweis: All-Day Event, DTEND ist der Folgetag (iCal-Standard).
             </p>
           </div>
-        </div>
-      )}
+        )}
+      </section>
+
+      <section className="text-sm text-slate-600 leading-relaxed">
+        <h3 className="text-base font-semibold text-slate-900 mb-2">Wichtig</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>DOT sagt nur das Herstellungsdatum – nicht, ob der Reifen noch sicher ist.</li>
+          <li>Prüfe Profil, Risse, Ausbeulungen und Alterung. Bei Unsicherheit: Reifenfachbetrieb.</li>
+        </ul>
+      </section>
     </div>
   );
 }

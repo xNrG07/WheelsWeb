@@ -1,74 +1,53 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { winterRegulations, RULE_TYPE_LABELS, RULE_TYPE_COLORS, type RuleType } from '@/data/winterRegulations';
+import { Metadata } from 'next';
+import { winterRegulations } from '@/data/winterRegulations';
 import { WinterpflichtClient } from './WinterpflichtClient';
-import { AdSlot } from '@/components/ads/AdSlot';
 
 export const metadata: Metadata = {
-  title: 'Winterreifenpflicht Europa – Übersicht 2025',
-  description:
-    'Winterreifenpflicht in 15 europäischen Ländern: Regelungen, Fristen, Mindestprofiltiefe und Bußgelder für Deutschland, Österreich, Schweiz und mehr.',
+  title: 'Winterreifenpflicht Europa – Länderübersicht',
+  description: 'Aktuelle Übersicht zur Winterausrüstung (Winterreifen/Schneeketten) in europäischen Ländern – mit Quellen und Stand-Datum.',
   alternates: { canonical: '/winterpflicht' },
 };
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  name: 'Winterreifenpflicht Europa 2025',
-  url: 'https://www.reifensetup.de/winterpflicht',
-  description: 'Aktuelle Übersicht zur Winterreifenpflicht in europäischen Ländern.',
-  inLanguage: 'de-DE',
-};
+function getStandDate() {
+  const max = winterRegulations.reduce((acc, r) => (r.last_updated > acc ? r.last_updated : acc), '1970-01-01');
+  const d = new Date(max);
+  return d.toLocaleDateString('de-DE');
+}
 
 export default function WinterpflichtPage() {
+  const stand = getStandDate();
+
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div className="section-container py-10">
-        <nav aria-label="Breadcrumb" className="mb-6 text-sm text-slate-500">
-          <ol className="flex items-center gap-1.5">
-            <li><Link href="/" className="hover:text-brand-600">Startseite</Link></li>
-            <li aria-hidden="true">/</li>
-            <li className="text-slate-700 font-medium">Winterpflicht Europa</li>
-          </ol>
-        </nav>
+    <div className="space-y-8">
+      <header className="space-y-2">
+        <h1 className="text-2xl font-semibold text-slate-900">Winterreifenpflicht in Europa</h1>
+        <p className="text-slate-600">
+          Hier findest du eine kompakte Übersicht pro Land – inkl. Zeitraum, Mindestprofil und Schneeketten-Regeln.
+          Details + Quellen findest du auf der jeweiligen Länder-Seite.
+        </p>
+        <p className="text-xs text-slate-500">Stand (letzte Datenpflege): {stand}</p>
+      </header>
 
-        <header className="mb-6">
-          <h1 className="page-title">Winterreifenpflicht in Europa</h1>
-          <p className="page-subtitle max-w-2xl">
-            Übersicht der aktuellen Regelungen in 15 Ländern –
-            mit Zeiträumen, Mindestprofiltiefe, Bußgeldern und direkten Quellenlinks.
-          </p>
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200 px-3 py-1.5 text-sm text-amber-700">
-            <span aria-hidden="true">📅</span>
-            <strong>Stand: Januar 2025.</strong> Angaben ohne Gewähr – vor Reiseantritt offizielle Behördenseiten prüfen.
-          </div>
-        </header>
+      <WinterpflichtClient regulations={winterRegulations} />
 
-        {/* Legend */}
-        <div className="mb-6 flex flex-wrap gap-2" role="legend" aria-label="Legende Regelungstypen">
-          {(Object.entries(RULE_TYPE_LABELS) as [RuleType, string][]).map(([type, label]) => (
-            <span key={type} className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${RULE_TYPE_COLORS[type]}`}>
-              {label}
-            </span>
-          ))}
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+        <h2 className="text-base font-semibold text-slate-900">Legende</h2>
+        <div className="mt-3 flex flex-wrap gap-2 text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" /> Pflicht (fixer Zeitraum)
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1">
+            <span className="h-2 w-2 rounded-full bg-amber-500" aria-hidden="true" /> Situativ (wetter-/schildabhängig)
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1">
+            <span className="h-2 w-2 rounded-full bg-slate-400" aria-hidden="true" /> Keine generelle Pflicht
+          </span>
         </div>
-
-        <AdSlot position="top" />
-
-        <WinterpflichtClient regulations={winterRegulations} />
-
-        <div className="mt-12"><AdSlot position="mid" /></div>
-
-        <aside className="mt-8 rounded-2xl bg-slate-50 border border-slate-200 p-5">
-          <h2 className="font-semibold text-slate-800 mb-3">Weitere Tools</h2>
-          <ul className="flex flex-wrap gap-3">
-            <li><Link href="/tools/reifenrechner" className="text-sm text-brand-600 hover:underline">Reifenrechner →</Link></li>
-            <li><Link href="/tools/dot-decoder" className="text-sm text-brand-600 hover:underline">DOT-Decoder →</Link></li>
-            <li><Link href="/guide/reifen-basiswissen" className="text-sm text-brand-600 hover:underline">Reifen-Basiswissen →</Link></li>
-          </ul>
-        </aside>
-      </div>
-    </>
+        <p className="mt-3 text-xs text-slate-500">
+          Hinweis: Gesetze/Verordnungen können sich ändern und regionale Regeln (z.B. Italien) sind häufig streng(er).
+          Im Zweifel: lokale Beschilderung + offizielle Quellen beachten.
+        </p>
+      </section>
+    </div>
   );
 }

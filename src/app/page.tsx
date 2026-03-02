@@ -146,7 +146,7 @@ export default function HomePage() {
           <h2 id="trust-heading" className="sr-only">Warum ReifenSetup?</h2>
           <div className="grid gap-6 sm:grid-cols-3 text-center">
             {[
-              { icon: '🔒', title: 'Keine Datensammlung', text: 'Alle Berechnungen laufen im Browser. Kein Server, kein Tracking.' },
+              { icon: '🔒', title: 'Browser-basiert', text: 'Alle Berechnungen laufen im Browser. Optional Werbung (AdSense) nur nach Einwilligung.' },
               { icon: '⚡', title: 'Sofortige Ergebnisse', text: 'Interaktiv und reaktiv – ohne Seitenreload, ohne Wartezeit.' },
               { icon: '📐', title: 'Standardformeln', text: 'ETRTO-konforme Berechnungen nach DIN-Norm. Transparent und nachvollziehbar.' },
             ].map((item) => (
