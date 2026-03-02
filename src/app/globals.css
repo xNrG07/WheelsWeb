@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500 rounded;
+  }
+}
+
+@layer components {
+  .tool-card {
+    @apply relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:bg-brand-700 focus-visible:outline-brand-500 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-brand-500;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none;
+    font-family: var(--font-mono);
+  }
+
+  .label-text {
+    @apply block mb-1.5 text-sm font-medium text-slate-700;
+  }
+
+  .result-card {
+    @apply rounded-2xl border border-brand-100 bg-brand-50 p-5;
+  }
+
+  .warning-box {
+    @apply rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800;
+  }
+
+  .section-container {
+    @apply mx-auto max-w-5xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .page-title {
+    @apply font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl;
+    font-family: var(--font-display);
+  }
+
+  .page-subtitle {
+    @apply mt-3 text-lg text-slate-600;
+  }
+}
+
+/* Ad slot separator styles */
+.ad-slot-wrapper {
+  @apply my-8 border-t border-b border-slate-100 py-4;
+}
+
+.ad-label {
+  @apply text-xs text-slate-400 uppercase tracking-wider mb-2;
+}
+
+/* Consent banner animation */
+.consent-banner {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Traffic light for DOT age */
+.dot-green  { @apply text-green-700 bg-green-50 border-green-200; }
+.dot-yellow { @apply text-yellow-700 bg-yellow-50 border-yellow-200; }
+.dot-red    { @apply text-red-700 bg-red-50 border-red-200; }
