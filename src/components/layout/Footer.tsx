@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { siteConfig } from '@/config/site';
+import { siteConfig } from '@/lib/config';
 import { ConsentSettingsButton } from '@/components/consent/ConsentSettingsButton';
 
 export function Footer() {
