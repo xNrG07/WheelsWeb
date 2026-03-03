@@ -17,7 +17,11 @@ export const siteConfig = {
 };
 
 export const AD_CONFIG = {
-  ENABLED: false, // ← auf true setzen, wenn AdSense genehmigt
+  // NOTE:
+  // - ENABLED must be true for ads to render.
+  // - Replace PUBLISHER_ID + SLOTS with your real values from Google AdSense.
+  //   If you keep the placeholders, the ad components stay hidden and nothing will show.
+  ENABLED: true,
   PUBLISHER_ID: 'ca-pub-XXXXXXXXXXXXXXXX',
   SLOTS: {
     TOP: 'XXXXXXXXXX',
