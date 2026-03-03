@@ -1,11 +1,11 @@
 export const siteConfig = {
-  name: 'ReifenSetup',
+  name: 'ReifenCheck',
   tagline: 'Reifentools für DACH & Europa',
   description:
     'Kostenlose Reifen-Tools: Reifengrößen berechnen, Felgen-ET prüfen, DOT-Code auslesen und Winterreifenpflicht in Europa nachschlagen.',
-  url: 'https://www.reifensetup.de',
+  url: 'https://reifencheck.org',
   locale: 'de_DE',
-  twitterHandle: '@reifensetup',
+  twitterHandle: '@reifencheck',
   keywords: [
     'Reifenrechner',
     'Felgen ET Check',

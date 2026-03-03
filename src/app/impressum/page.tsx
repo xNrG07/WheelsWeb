@@ -1,52 +1,85 @@
-import type { Metadata } from 'next';
+import Link from "next/link"
 
-export const metadata: Metadata = {
-  title: 'Impressum',
-  description: 'Impressum für ReifenSetup (Template – Betreiberangaben anpassen).',
-  alternates: { canonical: '/impressum' },
-  robots: { index: false, follow: false },
-};
+export const metadata = {
+  title: "Impressum",
+  description: "Impressum gemäß österreichischem Recht (AT) für reifencheck.org.",
+}
 
 export default function ImpressumPage() {
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold text-slate-900">Impressum</h1>
-        <p className="text-slate-600">
-          Diese Seite ist ein Template. Du musst Betreiber- und Kontaktangaben korrekt eintragen.
-          (Österreich: §5 ECG / MedienG; Deutschland: §5 DDG).
-        </p>
-      </header>
+    <main className="container mx-auto max-w-3xl px-4 py-10">
+      <article className="prose prose-zinc dark:prose-invert">
+        <h1>Impressum</h1>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
-        <h2 className="text-base font-semibold text-slate-900">Angaben zum Betreiber</h2>
-        <p className="text-sm text-slate-700">
-          <strong>[Dein Name/Firma]</strong><br />
-          [Straße, Hausnummer]<br />
-          [PLZ Ort]<br />
-          [Land]
-        </p>
-        <p className="text-sm text-slate-700">
-          <strong>E-Mail:</strong> [kontakt@deinedomain.tld]<br />
-          <strong>Telefon:</strong> [optional]
-        </p>
-      </section>
+        <section>
+          <h2>Betreiber</h2>
+          <p>
+            <strong>Peter Markelic</strong>
+            <br />
+            Richtstraße 13c
+            <br />
+            9500 Villach
+            <br />
+            Österreich
+            <br />
+            E-Mail:{" "}
+            <a href="mailto:peter.markelic1@gmail.com">peter.markelic1@gmail.com</a>
+          </p>
+          <p>Betreiberstatus: Privat (natürliche Person), Rechtsraum: Österreich (AT).</p>
+        </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
-        <h2 className="text-base font-semibold text-slate-900">Haftungsausschluss</h2>
-        <p className="text-sm text-slate-700">
-          Inhalte dieser Website wurden mit Sorgfalt erstellt, sind aber ohne Gewähr. Rechtliche Regeln (z.B. Winterausrüstung)
-          können sich ändern; maßgeblich sind immer lokale Vorschriften und Beschilderung.
-        </p>
-      </section>
+        <section>
+          <h2>Zweck der Website</h2>
+          <p>
+            reifencheck.org stellt kostenlos nutzbare Rechner/Tools und Informationsinhalte rund um Reifen und Felgen
+            bereit (z. B. Größen, Druck, ET/Offset, Winterpflicht-Infos). Die Inhalte dienen ausschließlich der
+            allgemeinen Information.
+          </p>
+        </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft space-y-4">
-        <h2 className="text-base font-semibold text-slate-900">Streitbeilegung</h2>
-        <p className="text-sm text-slate-700">
-          Wenn du verpflichtende Informationen zur Verbraucherstreitbeilegung angeben musst (je nach Land/Angebot), ergänze sie hier.
-          Hinweis: Die EU-Online-Streitbeilegungsplattform (ODR) wurde 2025 eingestellt.
-        </p>
-      </section>
-    </div>
-  );
+        <section>
+          <h2>Offenlegung gemäß § 25 MedienG (AT)</h2>
+          <p>
+            Medieninhaber und Herausgeber: Peter Markelic, Anschrift wie oben.
+            <br />
+            Grundlegende Richtung (&ldquo;Blattlinie&rdquo;): Information und Hilfestellung zu Reifenthemen für den
+            deutschsprachigen Raum (DACH).
+          </p>
+        </section>
+
+        <section>
+          <h2>Haftung für Inhalte</h2>
+          <p>
+            Trotz sorgfältiger Erstellung kann keine Gewähr für Richtigkeit, Vollständigkeit und Aktualität der Inhalte
+            übernommen werden. Die Nutzung der bereitgestellten Informationen erfolgt auf eigene Verantwortung.
+          </p>
+        </section>
+
+        <section>
+          <h2>Haftung für Links</h2>
+          <p>
+            Diese Website kann Links zu externen Websites enthalten. Für deren Inhalte wird keine Verantwortung
+            übernommen, da auf die Gestaltung externer Seiten kein Einfluss besteht. Bei Bekanntwerden von
+            Rechtsverletzungen werden entsprechende Links entfernt.
+          </p>
+        </section>
+
+        <section>
+          <h2>Urheberrecht</h2>
+          <p>
+            Inhalte dieser Website unterliegen dem Urheberrecht. Eine Verwendung außerhalb der Grenzen des Urheberrechts
+            bedarf der vorherigen schriftlichen Zustimmung des Betreibers.
+          </p>
+        </section>
+
+        <section>
+          <h2>Datenschutz</h2>
+          <p>
+            Details zur Verarbeitung personenbezogener Daten findest du in der{" "}
+            <Link href="/datenschutz">Datenschutzerklärung</Link>.
+          </p>
+        </section>
+      </article>
+    </main>
+  )
 }

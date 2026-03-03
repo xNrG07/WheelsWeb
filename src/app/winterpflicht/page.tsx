@@ -14,7 +14,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
   name: 'Winterreifenpflicht Europa 2025',
-  url: 'https://www.reifensetup.de/winterpflicht',
+  url: 'https://reifencheck.org/winterpflicht',
   description: 'Aktuelle Übersicht zur Winterreifenpflicht in europäischen Ländern.',
   inLanguage: 'de-DE',
 };

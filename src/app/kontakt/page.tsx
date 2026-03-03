@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { KontaktClient } from './KontaktClient';
 
 export const metadata: Metadata = {
-  title: 'Kontakt – ReifenSetup',
-  description: 'Kontaktiere das ReifenSetup-Team per E-Mail.',
+  title: 'Kontakt – ReifenCheck',
+  description: 'Kontaktiere ReifenCheck per E-Mail.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/kontakt' },
 };
@@ -22,7 +22,7 @@ export default function KontaktPage() {
 
       <h1 className="page-title mb-4">Kontakt</h1>
       <p className="text-slate-600 mb-8 leading-relaxed">
-        Fragen, Hinweise zu Fehlern oder Anregungen? Schreib uns eine E-Mail –
+        Fragen, Hinweise zu Fehlern oder Anregungen? Schreib mir eine E-Mail –
         wir antworten in der Regel innerhalb von 2–3 Werktagen. Für rechtliche
         Anfragen benutze bitte die im Impressum genannte Adresse.
       </p>
@@ -30,7 +30,7 @@ export default function KontaktPage() {
       <KontaktClient />
 
       <p className="mt-8 text-xs text-slate-400">
-        Dieses Kontaktformular sendet keine Daten an unsere Server.
+        Dieses Kontakt sendet keine Daten an unsere Server.
         Die E-Mail wird direkt in deinem Standard-E-Mail-Programm geöffnet.
       </p>
     </div>

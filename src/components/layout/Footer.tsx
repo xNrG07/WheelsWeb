@@ -37,12 +37,12 @@ export function Footer() {
                 className="text-lg font-bold text-slate-900"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
-                ReifenSetup
+                ReifenCheck
               </span>
             </Link>
             <p className="text-sm text-slate-500 leading-relaxed">
               Kostenlose Reifen-Tools für DACH &amp; Europa.
-              Alle Berechnungen laufen im Browser – kein Backend, kein Tracking.
+              Alle Berechnungen laufen im Browser – kein Backend, kein eigenes Tracking. Werbung wird nur nach Einwilligung geladen.
             </p>
           </div>
 

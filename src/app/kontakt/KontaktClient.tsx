@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const EMAIL = 'kontakt@reifensetup.de';
+const EMAIL = 'peter.markelic1@gmail.com';
 
 export function KontaktClient() {
   const [copied, setCopied] = useState(false);
@@ -26,7 +26,7 @@ export function KontaktClient() {
 
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <a
-          href={`mailto:${EMAIL}?subject=Anfrage%20ReifenSetup`}
+          href={`mailto:${EMAIL}?subject=Anfrage%20ReifenCheck`}
           className="btn-primary justify-center text-center"
         >
           <span aria-hidden="true">✉️</span> E-Mail schreiben
