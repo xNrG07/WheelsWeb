@@ -49,8 +49,7 @@ export function KontaktClient() {
       </div>
 
       <p className="text-xs text-slate-400 border-t border-slate-100 pt-4">
-        Kein Formular-Backend. Keine serverseitige Verarbeitung durch uns (außer Standard-Hosting-Logs). Das Klicken auf „E-Mail schreiben“ öffnet dein
-        lokales E-Mail-Programm. Die „Kopieren“-Funktion läuft vollständig clientseitig.
+        Wir antworten in der Regel innerhalb weniger Werktage. Für allgemeine Fragen zu den Tools schau bitte zuerst in den FAQ auf der Startseite.
       </p>
     </div>
   );

@@ -13,7 +13,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'Reifenrechner',
-  url: 'https://reifencheck.org/tools/reifenrechner',
+  url: 'https://www.reifensetup.de/tools/reifenrechner',
   applicationCategory: 'UtilityApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },

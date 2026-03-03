@@ -74,10 +74,7 @@ export function ConsentBanner() {
                 Werbung (AdSense): optional
               </span>
             </div>
-            <p className="mt-2 text-[11px] text-slate-400">
-              Hinweis: Für Traffic aus EWR/UK/CH kann für personalisierte Werbung eine Google-zertifizierte CMP erforderlich sein.
-              Dieses einfache Banner ist dafür nicht automatisch ausreichend.
-            </p>
+
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 shrink-0">

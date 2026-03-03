@@ -119,11 +119,11 @@ export function DOTDecoderClient() {
     dtEndDate.setUTCDate(dtEndDate.getUTCDate() + 1);
     const dtEnd = `${dtEndDate.getUTCFullYear()}${pad2(dtEndDate.getUTCMonth() + 1)}${pad2(dtEndDate.getUTCDate())}`;
     const dtStamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
-    const uid = `dot-${res.week}${String(res.year)}-${dtStart}@reifencheck`;
+    const uid = `dot-${res.week}${String(res.year)}-${dtStart}@reifensetup`;
     const summary = `Reifen-Check: DOT ${pad2(res.week!)}/${res.year} ist jetzt ${remindAtYears} Jahre alt`;
     const ics = [
       'BEGIN:VCALENDAR', 'VERSION:2.0',
-      'PRODID:-//ReifenCheck//DOT Reminder//DE', 'CALSCALE:GREGORIAN',
+      'PRODID:-//ReifenSetup//DOT Reminder//DE', 'CALSCALE:GREGORIAN',
       'BEGIN:VEVENT', `UID:${uid}`, `DTSTAMP:${dtStamp}`,
       `DTSTART;VALUE=DATE:${dtStart}`, `DTEND;VALUE=DATE:${dtEnd}`,
       `SUMMARY:${summary}`,
@@ -245,7 +245,7 @@ export function DOTDecoderClient() {
               📅 .ics herunterladen
             </button>
             <p className="mt-2 text-xs text-slate-400">
-              Wird clientseitig generiert – keine Daten verlassen deinen Browser.
+              Wird lokal in deinem Browser erstellt – keine Daten werden übertragen.
             </p>
           </div>
         )}

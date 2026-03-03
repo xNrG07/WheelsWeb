@@ -13,7 +13,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'DOT-Decoder',
-  url: 'https://reifencheck.org/tools/dot-decoder',
+  url: 'https://www.reifensetup.de/tools/dot-decoder',
   applicationCategory: 'UtilityApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },

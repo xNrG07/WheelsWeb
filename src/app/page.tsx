@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     q: 'Kann ich die Tools auf meiner Website einbetten?',
-    a: 'Nein. Die Tools sind ausschließlich über reifencheck.org nutzbar. Ein Embedding oder Scraping ist nicht gestattet.',
+    a: 'Nein. Die Tools sind ausschließlich über reifensetup.de nutzbar. Ein Embedding oder Scraping ist nicht gestattet.',
   },
 ];
 
@@ -144,7 +144,7 @@ export default function HomePage() {
           >
             Alle Tools
           </h2>
-          <p className="mt-1 text-sm text-slate-500">4 Werkzeuge · alle kostenlos · alle clientseitig</p>
+          <p className="mt-1 text-sm text-slate-500">4 Werkzeuge · alle kostenlos · ohne Anmeldung</p>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -185,7 +185,7 @@ export default function HomePage() {
       {/* ── Trust strip ──────────────────────────────────────────── */}
       <section className="border-y border-slate-200 bg-white py-10" aria-labelledby="trust-heading">
         <div className="section-container">
-          <h2 id="trust-heading" className="sr-only">Warum ReifenCheck?</h2>
+          <h2 id="trust-heading" className="sr-only">Warum ReifenSetup?</h2>
           <div className="grid gap-8 sm:grid-cols-3 text-center">
             {trustItems.map((item) => (
               <div key={item.title} className="flex flex-col items-center gap-3">

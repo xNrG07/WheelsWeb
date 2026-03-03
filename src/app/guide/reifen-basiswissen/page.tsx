@@ -3,8 +3,8 @@ import Link from "next/link";
 import { AdSlot } from "@/components/ads/AdSlot";
 
 export const metadata: Metadata = {
-  title: "Reifen-Basiswissen – Reifengroessen, DOT und Winterreifen",
-  description: "Kompakter Ueberblick: Wie lese ich eine Reifengroesse? Was bedeutet DOT? Wann sind Winterreifen Pflicht? Sachlich erklaert.",
+  title: "Reifen-Basiswissen – Reifengrößen, DOT und Winterreifen",
+  description: "Kompakter Überblick: Wie lese ich eine Reifengröße? Was bedeutet DOT? Wann sind Winterreifen Pflicht? Sachlich erklärt.",
   alternates: { canonical: "/guide/reifen-basiswissen" },
 };
 
@@ -20,7 +20,7 @@ export default function ReifenBasiswissenPage() {
       </nav>
       <header className="mb-8">
         <h1 className="page-title">Reifen-Basiswissen</h1>
-        <p className="page-subtitle">Sachlicher Ueberblick fuer Autofahrer in DACH.</p>
+        <p className="page-subtitle">Sachlicher Überblick für Autofahrer in DACH.</p>
       </header>
       <AdSlot position="top" />
       <article className="space-y-8 text-slate-700 leading-relaxed">
@@ -29,30 +29,30 @@ export default function ReifenBasiswissenPage() {
           <p>Auf der Flanke jedes Pkw-Reifens steht eine normierte Kombination wie <strong>205/55 R16 91V</strong>:</p>
           <ul className="mt-3 space-y-2 list-disc list-inside text-sm">
             <li><strong>205</strong> - Reifenbreite in mm</li>
-            <li><strong>55</strong> - Querschnittsverhaeltnis (Seitenwandhoehe = 55% der Breite = 112,75 mm)</li>
+            <li><strong>55</strong> - Querschnittsverhältnis (Seitenwandhöhe = 55% der Breite = 112,75 mm)</li>
             <li><strong>R</strong> - Radialreifen</li>
             <li><strong>16</strong> - Felgendurchmesser in Zoll</li>
-            <li><strong>91</strong> - Tragfaehigkeitsindex (615 kg/Reifen)</li>
+            <li><strong>91</strong> - Tragfähigkeitsindex (615 kg/Reifen)</li>
             <li><strong>V</strong> - Geschwindigkeitsindex (bis 240 km/h)</li>
           </ul>
-          <p className="mt-3 text-sm">Mit dem <Link href="/tools/reifenrechner" className="text-brand-600 hover:underline">Reifenrechner</Link> kannst du zwei Groessen direkt vergleichen.</p>
+          <p className="mt-3 text-sm">Mit dem <Link href="/tools/reifenrechner" className="text-brand-600 hover:underline">Reifenrechner</Link> kannst du zwei Größen direkt vergleichen.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-slate-900 mb-3">2. Den DOT-Code verstehen</h2>
-          <p>Die letzten vier Ziffern des DOT-Codes zeigen Produktionswoche und -jahr. <code className="bg-slate-100 rounded px-1 font-mono text-sm">2319</code> = Woche 23 des Jahres 2019 (Juni 2019). Reifen sollten nach 6 Jahren geprueft und nach 10 Jahren ausgetauscht werden.</p>
+          <p>Die letzten vier Ziffern des DOT-Codes zeigen Produktionswoche und -jahr. <code className="bg-slate-100 rounded px-1 font-mono text-sm">2319</code> = Woche 23 des Jahres 2019 (Juni 2019). Reifen sollten nach 6 Jahren geprüft und nach 10 Jahren ausgetauscht werden.</p>
           <p className="mt-3 text-sm">Tipp: <Link href="/tools/dot-decoder" className="text-brand-600 hover:underline">DOT-Decoder</Link> ermittelt Alter automatisch und erstellt einen Kalender-Reminder.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-slate-900 mb-3">3. Winterreifen vs. Ganzjahresreifen</h2>
-          <p>Nur Reifen mit dem <strong>3PMSF</strong>-Symbol (Schneeflocke auf Berg) erfuellen in Deutschland und Oesterreich die gesetzlichen Anforderungen. Das M+S-Symbol allein reicht seit 2024 nicht mehr aus. Ganzjahresreifen mit beiden Symbolen sind in DACH erlaubt - ein Kompromiss fuer gemaessigtes Klima.</p>
+          <p>Nur Reifen mit dem <strong>3PMSF</strong>-Symbol (Schneeflocke auf Berg) erfüllen in Deutschland und Österreich die gesetzlichen Anforderungen. Das M+S-Symbol allein reicht seit 2024 nicht mehr aus. Ganzjahresreifen mit beiden Symbolen sind in DACH erlaubt - ein Kompromiss für gemäßigtes Klima.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-slate-900 mb-3">4. Profiltiefe: Gesetz vs. Praxis</h2>
-          <p>Gesetzlich: 1,6 mm. Empfehlung ADAC: mindestens 4 mm fuer Winterreifen, 3 mm fuer Sommerreifen. Unter 4 mm nimmt die Wintereignung deutlich ab.</p>
+          <p>Gesetzlich: 1,6 mm. Empfehlung ADAC: mindestens 4 mm für Winterreifen, 3 mm für Sommerreifen. Unter 4 mm nimmt die Wintereignung deutlich ab.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-slate-900 mb-3">5. Winterreifenpflicht in Europa</h2>
-          <p>Deutschland: situative Pflicht (kein festes Datum). Oesterreich: 1. November bis 15. April. Schweiz: keine Pflicht, aber Haftungsrisiko. Details fuer 15 Laender in der <Link href="/winterpflicht" className="text-brand-600 hover:underline">Winterpflicht-Uebersicht</Link>.</p>
+          <p>Deutschland: situative Pflicht (kein festes Datum). Österreich: 1. November bis 15. April. Schweiz: keine Pflicht, aber Haftungsrisiko. Details für 15 Länder in der <Link href="/winterpflicht" className="text-brand-600 hover:underline">Winterpflicht-Übersicht</Link>.</p>
         </section>
       </article>
       <AdSlot position="mid" />

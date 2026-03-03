@@ -23,7 +23,7 @@ export function Header() {
         <Link
           href="/"
           className="flex items-center gap-2.5 group"
-          aria-label="ReifenCheck – Startseite"
+          aria-label="ReifenSetup – Startseite"
         >
           <span
             className="flex h-9 w-9 items-center justify-center rounded-xl text-white text-lg font-black shadow-sm"
@@ -36,7 +36,7 @@ export function Header() {
             className="text-xl font-bold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors"
             style={{ fontFamily: 'var(--font-display)' }}
           >
-            ReifenCheck
+            ReifenSetup
           </span>
         </Link>
 

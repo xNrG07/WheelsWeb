@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { KontaktClient } from './KontaktClient';
 
 export const metadata: Metadata = {
-  title: 'Kontakt – ReifenCheck',
-  description: 'Kontaktiere ReifenCheck per E-Mail.',
+  title: 'Kontakt',
+  description: 'Kontakt aufnehmen – Fragen und Feedback zu ReifenCheck.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/kontakt' },
 };
@@ -29,10 +29,7 @@ export default function KontaktPage() {
 
       <KontaktClient />
 
-      <p className="mt-8 text-xs text-slate-400">
-        Dieses Kontakt sendet keine Daten an unsere Server.
-        Die E-Mail wird direkt in deinem Standard-E-Mail-Programm geöffnet.
-      </p>
+
     </div>
   );
 }

@@ -29,7 +29,7 @@ export default function CountryPage({ params }: { params: { country: string } })
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name: `Winterreifenpflicht ${reg.country}`,
-    url: `https://reifencheck.org/winterpflicht/${reg.slug}`,
+    url: `https://www.reifensetup.de/winterpflicht/${reg.slug}`,
     inLanguage: 'de-DE',
     description: reg.rule_summary,
   };

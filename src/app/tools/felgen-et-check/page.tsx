@@ -13,7 +13,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'Felgen ET-Check',
-  url: 'https://reifencheck.org/tools/felgen-et-check',
+  url: 'https://www.reifensetup.de/tools/felgen-et-check',
   applicationCategory: 'UtilityApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
