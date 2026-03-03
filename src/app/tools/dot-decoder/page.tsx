@@ -5,7 +5,8 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'DOT-Decoder – Reifenalter und Produktionsdatum auslesen',
-  description: 'Gib den DOT-Code deines Reifens ein und erfahre Produktionswoche, -jahr, Alter in Monaten und ob der Reifen noch sicher ist.',
+  description:
+    'Gib den DOT-Code deines Reifens ein und erfahre Produktionswoche, -jahr, Alter in Monaten und ob der Reifen noch sicher ist.',
   alternates: { canonical: '/tools/dot-decoder' },
 };
 
@@ -29,7 +30,7 @@ export default function DOTDecoderPage() {
           <ol className="flex items-center gap-1.5">
             <li><Link href="/" className="hover:text-brand-600">Startseite</Link></li>
             <li aria-hidden="true">/</li>
-            <li className="text-slate-700 font-semibold">DOT-Decoder</li>
+            <li className="text-slate-700 font-medium">DOT-Decoder</li>
           </ol>
         </nav>
         <header className="mb-8">
@@ -42,21 +43,22 @@ export default function DOTDecoderPage() {
         <AdSlot position="top" />
         <DOTDecoderClient />
         <div className="mt-12"><AdSlot position="mid" /></div>
-        <section className="mt-8 rounded-2xl bg-white border border-slate-200 p-5 shadow-soft">
-          <h2 className="font-bold text-slate-800 mb-2" style={{ fontFamily: 'var(--font-display)' }}>Was ist der DOT-Code?</h2>
+        <section className="mt-8 rounded-2xl bg-slate-50 border border-slate-200 p-5">
+          <h2 className="font-semibold text-slate-800 mb-2">Was ist der DOT-Code?</h2>
           <p className="text-sm text-slate-600 leading-relaxed">
             Der DOT-Code (Department of Transportation) ist eine Pflichtangabe auf jedem
-            Autoreifen. Die letzten 4 Ziffern, z. B.{' '}
-            <code className="bg-slate-100 rounded px-1 font-mono text-xs">2319</code>,
-            bedeuten: <strong>23. Woche des Jahres 2019</strong>. Reifen sollten nach 6 Jahren geprüft und nach 10 Jahren ausgetauscht werden.
+            Autoreifen. Die letzten 4 Ziffern, z. B. <code className="bg-slate-200 rounded px-1 font-mono text-xs">2319</code>,
+            bedeuten: <strong>23. Woche des Jahres 2019</strong>. Ältere Reifen (vor 2000)
+            verwendeten nur 3 Ziffern. Reifenhersteller und der ADAC empfehlen,
+            Reifen nach spätestens 6–10 Jahren zu ersetzen, unabhängig vom Profil.
           </p>
         </section>
-        <aside className="mt-5 rounded-2xl bg-white border border-slate-200 p-5 shadow-soft">
-          <h2 className="font-bold text-slate-800 mb-3" style={{ fontFamily: 'var(--font-display)' }}>Weitere Tools</h2>
+        <aside className="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-5">
+          <h2 className="font-semibold text-slate-800 mb-3">Weitere Tools</h2>
           <ul className="flex flex-wrap gap-3">
-            <li><Link href="/tools/reifenrechner" className="text-sm text-brand-600 hover:underline font-semibold">Reifenrechner →</Link></li>
-            <li><Link href="/tools/felgen-et-check" className="text-sm text-brand-600 hover:underline font-semibold">ET-Check →</Link></li>
-            <li><Link href="/winterpflicht" className="text-sm text-brand-600 hover:underline font-semibold">Winterpflicht →</Link></li>
+            <li><Link href="/tools/reifenrechner" className="text-sm text-brand-600 hover:underline">Reifenrechner →</Link></li>
+            <li><Link href="/tools/felgen-et-check" className="text-sm text-brand-600 hover:underline">ET-Check →</Link></li>
+            <li><Link href="/winterpflicht" className="text-sm text-brand-600 hover:underline">Winterpflicht →</Link></li>
           </ul>
         </aside>
       </div>

@@ -42,6 +42,11 @@ const jsonLd = {
       name: siteConfig.name,
       description: siteConfig.description,
       inLanguage: 'de-DE',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: `${siteConfig.url}/winterpflicht?q={search_term_string}` },
+        'query-input': 'required name=search_term_string',
+      },
     },
     {
       '@type': 'FAQPage',
@@ -54,12 +59,6 @@ const jsonLd = {
   ],
 };
 
-const trustItems = [
-  { icon: '🔒', title: 'Keine Datensammlung', text: 'Alle Berechnungen laufen lokal im Browser. Kein Server speichert deine Eingaben.' },
-  { icon: '⚡', title: 'Sofort & reaktiv', text: 'Ergebnisse erscheinen beim Tippen – kein Laden, kein Reload.' },
-  { icon: '📐', title: 'ETRTO-Norm', text: 'Standardisierte Formeln nach DIN/ETRTO. Transparent und nachvollziehbar.' },
-];
-
 export default function HomePage() {
   return (
     <>
@@ -68,84 +67,51 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* ── Hero ─────────────────────────────────────────────────── */}
-      <section
-        className="relative overflow-hidden py-16 sm:py-24"
-        style={{ background: 'linear-gradient(135deg, #0f1923 0%, #1a56db 60%, #1447c0 100%)' }}
-      >
-        {/* grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
-          }}
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 py-16 sm:py-24">
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 70% 50%, white 1px, transparent 1px)', backgroundSize: '32px 32px' }}
           aria-hidden="true"
         />
-        {/* accent dot top-right */}
-        <div
-          className="absolute -top-20 -right-20 h-80 w-80 rounded-full opacity-20 blur-3xl"
-          style={{ background: 'var(--c-accent)' }}
-          aria-hidden="true"
-        />
-
         <div className="section-container relative text-center">
-          <p
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-semibold text-white/80 mb-6 tracking-wide"
-            style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}
-          >
-            <span aria-hidden="true">🇩🇪 🇦🇹 🇨🇭</span> DACH &amp; Europa – kostenlos
+          <p className="inline-flex items-center gap-2 rounded-full border border-brand-400/40 bg-brand-800/60 px-4 py-1.5 text-sm font-medium text-brand-200 mb-6">
+            <span aria-hidden="true">🇩🇪 🇦🇹 🇨🇭</span> DACH & Europa – kostenlos & werbefinanziert
           </p>
-
           <h1
-            className="text-5xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl"
-            style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}
+            className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl"
+            style={{ fontFamily: 'var(--font-display)' }}
           >
-            Reifen-Tools,{' '}
-            <span style={{ color: 'var(--c-accent)' }}>die rechnen.</span>
+            Reifen-Tools, <br className="sm:hidden" />
+            <span className="text-brand-300">die rechnen.</span>
           </h1>
-
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70 leading-relaxed">
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-brand-200">
             Reifengrößen vergleichen, Felgen-ET prüfen, DOT-Code auslesen und
-            Winterreifenpflicht in Europa nachschlagen – direkt im Browser, ohne Anmeldung.
+            Winterreifenpflicht in ganz Europa nachschlagen – direkt im Browser,
+            ohne Anmeldung.
           </p>
-
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/tools/reifenrechner"
-              className="btn-primary"
-              style={{ background: 'var(--c-accent)', fontFamily: 'var(--font-display)' }}
-            >
+            <Link href="/tools/reifenrechner" className="btn-primary bg-white text-brand-800 hover:bg-brand-50">
               Zum Reifenrechner →
             </Link>
-            <Link
-              href="/guide/reifen-basiswissen"
-              className="btn-secondary"
-              style={{ background: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.25)', color: '#fff' }}
-            >
+            <Link href="/guide/reifen-basiswissen" className="btn-secondary border-brand-400/50 bg-brand-800/40 text-brand-100 hover:bg-brand-700/50">
               Reifen-Basiswissen
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Ad slot – after intro */}
+      {/* Ad slot – after intro, before tools, clearly separated */}
       <div className="section-container">
         <AdSlot position="top" />
       </div>
 
-      {/* ── Tool cards ───────────────────────────────────────────── */}
+      {/* Tool cards */}
       <section className="section-container py-12" aria-labelledby="tools-heading">
-        <div className="mb-8">
-          <h2
-            id="tools-heading"
-            className="text-3xl font-black text-slate-900"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
-            Alle Tools
-          </h2>
-          <p className="mt-1 text-sm text-slate-500">4 Werkzeuge · alle kostenlos · alle clientseitig</p>
-        </div>
+        <h2 id="tools-heading" className="text-2xl font-bold text-slate-900 mb-2"
+          style={{ fontFamily: 'var(--font-display)' }}>
+          Alle Tools
+        </h2>
+        <p className="text-slate-500 mb-8 text-sm">4 Werkzeuge – alle kostenlos, alle clientseitig</p>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {tools.map((tool) => (
@@ -155,26 +121,18 @@ export default function HomePage() {
               className="tool-card group flex flex-col"
               aria-label={`Tool: ${tool.title}`}
             >
-              <div
-                className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl text-2xl"
-                style={{ background: 'var(--c-bg)', border: '1.5px solid var(--c-border)' }}
-                aria-hidden="true"
-              >
+              <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${tool.color} text-2xl shadow-sm`}
+                aria-hidden="true">
                 {tool.icon}
               </div>
-              <h3
-                className="font-bold text-slate-900 group-hover:text-brand-700 transition-colors"
-                style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', letterSpacing: '0.02em' }}
-              >
+              <h3 className="font-semibold text-slate-900 group-hover:text-brand-700 transition-colors"
+                style={{ fontFamily: 'var(--font-display)' }}>
                 {tool.title}
               </h3>
               <p className="mt-2 flex-1 text-sm text-slate-500 leading-relaxed">
                 {tool.description}
               </p>
-              <span
-                className="mt-4 text-sm font-bold tracking-wide"
-                style={{ color: 'var(--c-brand)', fontFamily: 'var(--font-display)' }}
-              >
+              <span className="mt-4 text-sm font-medium text-brand-600 group-hover:text-brand-700">
                 Öffnen →
               </span>
             </Link>
@@ -182,62 +140,48 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Trust strip ──────────────────────────────────────────── */}
-      <section className="border-y border-slate-200 bg-white py-10" aria-labelledby="trust-heading">
+      {/* Trust section */}
+      <section className="bg-slate-100 py-10" aria-labelledby="trust-heading">
         <div className="section-container">
           <h2 id="trust-heading" className="sr-only">Warum ReifenSetup?</h2>
-          <div className="grid gap-8 sm:grid-cols-3 text-center">
-            {trustItems.map((item) => (
-              <div key={item.title} className="flex flex-col items-center gap-3">
-                <span
-                  className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl"
-                  style={{ background: 'var(--c-bg)' }}
-                  aria-hidden="true"
-                >
-                  {item.icon}
-                </span>
-                <div>
-                  <h3
-                    className="font-bold text-slate-900"
-                    style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', letterSpacing: '0.03em' }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">{item.text}</p>
-                </div>
+          <div className="grid gap-6 sm:grid-cols-3 text-center">
+            {[
+              { icon: '🔒', title: 'Browser-basiert', text: 'Alle Berechnungen laufen im Browser. Optional Werbung (AdSense) nur nach Einwilligung.' },
+              { icon: '⚡', title: 'Sofortige Ergebnisse', text: 'Interaktiv und reaktiv – ohne Seitenreload, ohne Wartezeit.' },
+              { icon: '📐', title: 'Standardformeln', text: 'ETRTO-konforme Berechnungen nach DIN-Norm. Transparent und nachvollziehbar.' },
+            ].map((item) => (
+              <div key={item.title} className="flex flex-col items-center gap-2">
+                <span className="text-3xl" aria-hidden="true">{item.icon}</span>
+                <h3 className="font-semibold text-slate-900">{item.title}</h3>
+                <p className="text-sm text-slate-500">{item.text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Ad slot mid */}
+      {/* Ad slot mid – between content and FAQ, separated */}
       <div className="section-container">
         <AdSlot position="mid" />
       </div>
 
-      {/* ── FAQ ──────────────────────────────────────────────────── */}
+      {/* FAQ */}
       <section className="section-container py-12" aria-labelledby="faq-heading">
-        <h2
-          id="faq-heading"
-          className="text-3xl font-black text-slate-900 mb-8"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
+        <h2 id="faq-heading" className="text-2xl font-bold text-slate-900 mb-8"
+          style={{ fontFamily: 'var(--font-display)' }}>
           Häufige Fragen
         </h2>
         <dl className="divide-y divide-slate-200">
           {faqs.map((faq) => (
             <div key={faq.q} className="py-5">
-              <dt className="font-bold text-slate-900" style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', letterSpacing: '0.02em' }}>
-                {faq.q}
-              </dt>
+              <dt className="font-semibold text-slate-900">{faq.q}</dt>
               <dd className="mt-2 text-sm text-slate-600 leading-relaxed">{faq.a}</dd>
             </div>
           ))}
         </dl>
         <p className="mt-6 text-sm text-slate-500">
           Weitere Informationen im{' '}
-          <Link href="/guide/reifen-basiswissen" className="text-brand-600 hover:underline font-semibold">
+          <Link href="/guide/reifen-basiswissen" className="text-brand-600 hover:underline">
             Reifen-Basiswissen Guide
           </Link>
           .

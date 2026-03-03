@@ -5,7 +5,8 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Felgen ET-Check – Einpresstiefe & Spurweite berechnen',
-  description: 'Berechne die Auswirkungen eines Felgenwechsels auf Innen-/Außenkante und Spurweite. Keine Fahrzeugdatenbank – reine Geometrie.',
+  description:
+    'Berechne die Auswirkungen eines Felgenwechsels auf Innen-/Außenkante und Spurweite. Keine Fahrzeugdatenbank – reine Geometrie.',
   alternates: { canonical: '/tools/felgen-et-check' },
 };
 
@@ -29,7 +30,7 @@ export default function FelgenETPage() {
           <ol className="flex items-center gap-1.5">
             <li><Link href="/" className="hover:text-brand-600">Startseite</Link></li>
             <li aria-hidden="true">/</li>
-            <li className="text-slate-700 font-semibold">Felgen ET-Check</li>
+            <li className="text-slate-700 font-medium">Felgen ET-Check</li>
           </ol>
         </nav>
         <header className="mb-8">
@@ -42,12 +43,12 @@ export default function FelgenETPage() {
         <AdSlot position="top" />
         <FelgenETClient />
         <div className="mt-12"><AdSlot position="mid" /></div>
-        <aside className="mt-8 rounded-2xl bg-white border border-slate-200 p-5 shadow-soft">
-          <h2 className="font-bold text-slate-800 mb-3" style={{ fontFamily: 'var(--font-display)' }}>Weitere Tools</h2>
+        <aside className="mt-8 rounded-2xl bg-slate-50 border border-slate-200 p-5">
+          <h2 className="font-semibold text-slate-800 mb-3">Weitere Tools</h2>
           <ul className="flex flex-wrap gap-3">
-            <li><Link href="/tools/reifenrechner" className="text-sm text-brand-600 hover:underline font-semibold">Reifenrechner →</Link></li>
-            <li><Link href="/tools/dot-decoder" className="text-sm text-brand-600 hover:underline font-semibold">DOT-Decoder →</Link></li>
-            <li><Link href="/winterpflicht" className="text-sm text-brand-600 hover:underline font-semibold">Winterpflicht Europa →</Link></li>
+            <li><Link href="/tools/reifenrechner" className="text-sm text-brand-600 hover:underline">Reifenrechner →</Link></li>
+            <li><Link href="/tools/dot-decoder" className="text-sm text-brand-600 hover:underline">DOT-Decoder →</Link></li>
+            <li><Link href="/winterpflicht" className="text-sm text-brand-600 hover:underline">Winterpflicht Europa →</Link></li>
           </ul>
         </aside>
       </div>
