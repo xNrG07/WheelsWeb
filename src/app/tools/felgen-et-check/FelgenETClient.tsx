@@ -138,7 +138,7 @@ export function FelgenETClient() {
             </label>
           </div>
           <p className="mt-3 text-xs text-slate-500">
-            Hinweis: Reifen stehen i.d.R. etwas über die Felge über ("Bulge"). Das wird hier grob geschätzt.
+            Hinweis: Reifen stehen i.d.R. etwas über die Felge über (&quot;Bulge&quot;). Das wird hier grob geschätzt.
           </p>
         </div>
 
