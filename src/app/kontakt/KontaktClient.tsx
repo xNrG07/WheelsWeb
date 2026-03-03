@@ -49,8 +49,8 @@ export function KontaktClient() {
       </div>
 
       <p className="text-xs text-slate-400 border-t border-slate-100 pt-4">
-        Kein Formular-Backend. Keine serverseitige Verarbeitung durch uns (außer Standard-Hosting-Logs). Das Klicken auf „E-Mail schreiben" öffnet dein
-        lokales E-Mail-Programm. Die „Kopieren"-Funktion läuft vollständig clientseitig.
+        Kein Formular-Backend. Keine serverseitige Verarbeitung durch uns (außer Standard-Hosting-Logs). Das Klicken auf „E-Mail schreiben“ öffnet dein
+        lokales E-Mail-Programm. Die „Kopieren“-Funktion läuft vollständig clientseitig.
       </p>
     </div>
   );
