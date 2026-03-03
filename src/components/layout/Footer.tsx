@@ -2,28 +2,91 @@ import Link from 'next/link';
 import { siteConfig } from '@/lib/config';
 import { ConsentSettingsButton } from '@/components/consent/ConsentSettingsButton';
 
+const toolLinks = [
+  { href: '/tools/reifenrechner', label: 'Reifenrechner' },
+  { href: '/tools/felgen-et-check', label: 'Felgen ET-Check' },
+  { href: '/tools/dot-decoder', label: 'DOT-Decoder' },
+  { href: '/winterpflicht', label: 'Winterpflicht Europa' },
+  { href: '/guide/reifen-basiswissen', label: 'Reifen-Basiswissen' },
+];
+
+const legalLinks = [
+  { href: '/impressum', label: 'Impressum' },
+  { href: '/datenschutz', label: 'Datenschutz' },
+  { href: '/kontakt', label: 'Kontakt' },
+];
+
 export function Footer() {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="mt-16 border-t border-slate-200 bg-white">
-      <div className="mx-auto max-w-6xl px-4 py-10">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-1">
-            <div className="text-sm font-semibold text-slate-900">{siteConfig.name}</div>
-            <div className="text-sm text-slate-600">
-              Reifen-Tools &amp; kompakte Infos. Regionale Beschilderung hat Vorrang.
-            </div>
+      <div className="section-container py-10">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+
+          {/* Brand */}
+          <div>
+            <Link href="/" className="inline-flex items-center gap-2.5 mb-3">
+              <span
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white text-sm font-black"
+                style={{ background: 'var(--c-brand)', fontFamily: 'var(--font-display)' }}
+              >
+                RS
+              </span>
+              <span
+                className="text-lg font-bold text-slate-900"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                ReifenSetup
+              </span>
+            </Link>
+            <p className="text-sm text-slate-500 leading-relaxed">
+              Kostenlose Reifen-Tools für DACH &amp; Europa.
+              Alle Berechnungen laufen im Browser – kein Backend, kein Tracking.
+            </p>
           </div>
 
-          <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-            <Link href="/impressum" className="text-slate-500 hover:text-slate-900">Impressum</Link>
-            <Link href="/datenschutz" className="text-slate-500 hover:text-slate-900">Datenschutz</Link>
-            <Link href="/kontakt" className="text-slate-500 hover:text-slate-900">Kontakt</Link>
-            <ConsentSettingsButton />
+          {/* Tools */}
+          <nav aria-label="Tool-Links">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Tools</p>
+            <ul className="space-y-2">
+              {toolLinks.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-sm text-slate-600 hover:text-brand-700 transition-colors"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Legal */}
+          <nav aria-label="Rechtliche Links">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-400">Rechtliches</p>
+            <ul className="space-y-2">
+              {legalLinks.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-sm text-slate-600 hover:text-brand-700 transition-colors"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <ConsentSettingsButton />
+              </li>
+            </ul>
           </nav>
         </div>
 
-        <div className="mt-6 text-xs text-slate-400">
-          © {new Date().getFullYear()} {siteConfig.name}. Inhalte ohne Gewähr.
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-100 pt-6 text-xs text-slate-400">
+          <p>© {year} {siteConfig.name}. Alle Angaben ohne Gewähr.</p>
+          <p>Kein Ersatz für Fachberatung · Keine Fahrzeugdatenbank</p>
         </div>
       </div>
     </footer>

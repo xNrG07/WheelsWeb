@@ -2,105 +2,214 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+/* ─── Fonts ─────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --font-display: 'Syne', system-ui, sans-serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
-  --font-mono: 'DM Mono', monospace;
+  --font-display: 'Barlow Condensed', system-ui, sans-serif;
+  --font-body:    'Barlow', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  --c-bg:         #f2f4f7;
+  --c-surface:    #ffffff;
+  --c-border:     #dde1e7;
+  --c-border-strong: #aab0bc;
+  --c-text:       #0f1923;
+  --c-muted:      #5a6677;
+  --c-brand:      #1a56db;
+  --c-brand-dark: #1447c0;
+  --c-accent:     #e67e22;
+  --c-success:    #16a34a;
+  --c-warn:       #ca8a04;
+  --c-danger:     #dc2626;
 }
 
+/* ─── Base ───────────────────────────────────────────────────────── */
 @layer base {
+  *, *::before, *::after { box-sizing: border-box; }
   html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-
   body {
-    @apply bg-slate-50 text-slate-900;
+    background-color: var(--c-bg);
+    color: var(--c-text);
     font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
   }
-
-  h1, h2, h3 {
+  h1, h2, h3, h4 {
     font-family: var(--font-display);
+    letter-spacing: 0.01em;
+    line-height: 1.15;
   }
-
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-brand-500 rounded;
+    outline: 2px solid var(--c-brand);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
+  ::selection { background: #c7d9ff; color: var(--c-text); }
 }
 
+/* ─── Components ────────────────────────────────────────────────── */
 @layer components {
-  .tool-card {
-    @apply relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
-  }
-
-  .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:bg-brand-700 focus-visible:outline-brand-500 disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
-  .btn-secondary {
-    @apply inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-brand-500;
-  }
-
-  .input-field {
-    @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-900 shadow-sm transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none;
-    font-family: var(--font-mono);
-  }
-
-  .label-text {
-    @apply block mb-1.5 text-sm font-medium text-slate-700;
-  }
-
-  .result-card {
-    @apply rounded-2xl border border-brand-100 bg-brand-50 p-5;
-  }
-
-  .warning-box {
-    @apply rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800;
-  }
 
   .section-container {
     @apply mx-auto max-w-5xl px-4 sm:px-6 lg:px-8;
   }
 
   .page-title {
-    @apply font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl;
     font-family: var(--font-display);
+    @apply text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl;
   }
-
   .page-subtitle {
-    @apply mt-3 text-lg text-slate-600;
+    @apply mt-3 text-lg text-slate-500 leading-relaxed;
   }
+
+  /* Tool card homepage */
+  .tool-card {
+    @apply relative bg-white rounded-2xl border border-slate-200 p-6 shadow-sm
+           transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-brand-300;
+  }
+
+  /* ── INPUTS: both .input-field and .input are identical and fully visible ── */
+  .input-field,
+  .input {
+    display: block;
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.925rem;
+    font-weight: 500;
+    color: var(--c-text);
+    background-color: #ffffff;
+    border: 2px solid var(--c-border-strong);
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.07);
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+  .input-field::-webkit-inner-spin-button,
+  .input::-webkit-inner-spin-button { opacity: 1; cursor: pointer; }
+  .input-field:focus,
+  .input:focus {
+    outline: none;
+    border-color: var(--c-brand);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04), 0 0 0 3px rgba(26,86,219,0.14);
+    background-color: #fafcff;
+  }
+  .input-field::placeholder,
+  .input::placeholder { color: #9ba8b8; font-weight: 400; }
+
+  /* Labels */
+  .label-text {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-semibold text-white
+           shadow-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+    background: var(--c-brand);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--c-brand-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(26,86,219,0.28);
+  }
+  .btn-primary:active:not(:disabled) { transform: translateY(0); }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 rounded-xl border-2 px-5 py-2.5 font-semibold
+           shadow-sm transition-all duration-150;
+    border-color: var(--c-border-strong);
+    background: #fff;
+    color: var(--c-text);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+  }
+  .btn-secondary:hover {
+    background: var(--c-bg);
+    border-color: var(--c-brand);
+    color: var(--c-brand);
+  }
+
+  /* Cards / Panels */
+  .result-card {
+    @apply rounded-xl p-5;
+    background: linear-gradient(135deg, #eef5ff 0%, #e4efff 100%);
+    border: 1.5px solid #c3d9f9;
+  }
+
+  .panel {
+    @apply rounded-2xl border bg-white p-5;
+    border-color: var(--c-border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  /* shadow-soft alias used by ChatGPT-modified components */
+  .shadow-soft {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  /* Warning / info boxes */
+  .warning-box {
+    @apply rounded-xl border p-4 text-sm leading-relaxed;
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #78350f;
+  }
+  .info-box {
+    @apply rounded-xl border p-4 text-sm leading-relaxed;
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1e40af;
+  }
+
+  /* DOT traffic lights */
+  .dot-green  { background: #f0fdf4; border-color: #86efac; color: #14532d; }
+  .dot-yellow { background: #fefce8; border-color: #fde047; color: #713f12; }
+  .dot-red    { background: #fef2f2; border-color: #fca5a5; color: #7f1d1d; }
 }
 
-/* Ad slot separator styles */
+/* ─── Ad slot ─────────────────────────────────────────────────────── */
 .ad-slot-wrapper {
-  @apply my-8 border-t border-b border-slate-100 py-4;
+  margin: 2rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid var(--c-border);
+  border-bottom: 1px solid var(--c-border);
 }
-
 .ad-label {
-  @apply text-xs text-slate-400 uppercase tracking-wider mb-2;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9ba8b8;
+  margin-bottom: 0.5rem;
 }
 
-/* Consent banner animation */
-.consent-banner {
-  animation: slideUp 0.3s ease-out;
-}
-
+/* ─── Consent banner ─────────────────────────────────────────────── */
+.consent-banner { animation: slideUp 0.3s ease-out; }
 @keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
-/* Traffic light for DOT age */
-.dot-green  { @apply text-green-700 bg-green-50 border-green-200; }
-.dot-yellow { @apply text-yellow-700 bg-yellow-50 border-yellow-200; }
-.dot-red    { @apply text-red-700 bg-red-50 border-red-200; }
+/* ─── Utilities ──────────────────────────────────────────────────── */
+@layer utilities {
+  .font-display  { font-family: var(--font-display); }
+  .font-mono-var { font-family: var(--font-mono); }
+  .text-muted    { color: var(--c-muted); }
+  .text-accent   { color: var(--c-accent); }
+}
